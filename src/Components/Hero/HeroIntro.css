@@ -1,0 +1,528 @@
+/* =========================================
+   ONE MORE TAKE — OPENING INTRO
+   Film leader countdown -> brand -> shutter opens
+========================================= */
+
+.omt-intro {
+  --omt-intro-red: #ed111b;
+  --omt-intro-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --omt-intro-shutter: cubic-bezier(0.76, 0, 0.24, 1);
+
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  overflow: hidden;
+  color: #ffffff;
+  font-family: "Space Grotesk", "DM Sans", sans-serif;
+  pointer-events: auto;
+}
+
+.omt-intro *,
+.omt-intro *::before,
+.omt-intro *::after {
+  box-sizing: border-box;
+}
+
+/* SHUTTER HALVES */
+.omt-intro-half {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 50.5%;
+  background: #0c0c0c;
+  transition: transform 1s var(--omt-intro-shutter) 0.15s;
+}
+
+.omt-intro-top {
+  top: 0;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(237, 17, 27, 0.16), transparent 60%),
+    #0c0c0c;
+}
+
+.omt-intro-bottom {
+  bottom: 0;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(237, 17, 27, 0.16), transparent 60%),
+    #0c0c0c;
+}
+
+.omt-intro.is-leaving .omt-intro-top {
+  transform: translateY(-100%);
+}
+
+.omt-intro.is-leaving .omt-intro-bottom {
+  transform: translateY(100%);
+}
+
+.omt-intro.is-leaving {
+  pointer-events: none;
+}
+
+/* Red light line when the shutter opens */
+.omt-intro-flash {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  z-index: 3;
+  width: 100%;
+  height: 2px;
+  margin-top: -1px;
+  background: var(--omt-intro-red);
+  box-shadow:
+    0 0 18px 2px rgba(237, 17, 27, 0.8),
+    0 0 60px 8px rgba(237, 17, 27, 0.35);
+  opacity: 0;
+  transform: scaleX(0);
+  pointer-events: none;
+}
+
+.omt-intro.is-leaving .omt-intro-flash {
+  animation: omtIntroFlash 0.9s var(--omt-intro-ease) forwards;
+}
+
+/* STAGE (everything on top of the shutter) */
+.omt-intro-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  transition:
+    opacity 0.3s ease,
+    transform 0.5s var(--omt-intro-ease);
+}
+
+.omt-intro.is-leaving .omt-intro-stage {
+  opacity: 0;
+  transform: scale(1.06);
+}
+
+.omt-intro-noise {
+  position: absolute;
+  inset: -50%;
+  opacity: 0.06;
+  background-image:
+    repeating-radial-gradient(circle at 17% 32%, #fff 0 1px, transparent 1px 3px),
+    repeating-radial-gradient(circle at 73% 61%, #fff 0 1px, transparent 1px 4px);
+  animation: omtIntroGrain 0.5s steps(4) infinite;
+  pointer-events: none;
+}
+
+/* VIEWFINDER CORNERS */
+.omt-intro-corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  border: 0 solid rgba(255, 255, 255, 0.55);
+  animation: omtIntroCorner 0.8s var(--omt-intro-ease) both;
+}
+
+.omt-corner-tl {
+  top: 28px;
+  left: 28px;
+  border-top-width: 2px;
+  border-left-width: 2px;
+}
+
+.omt-corner-tr {
+  top: 28px;
+  right: 28px;
+  border-top-width: 2px;
+  border-right-width: 2px;
+}
+
+.omt-corner-bl {
+  bottom: 28px;
+  left: 28px;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+}
+
+.omt-corner-br {
+  right: 28px;
+  bottom: 28px;
+  border-right-width: 2px;
+  border-bottom-width: 2px;
+}
+
+/* HUD */
+.omt-intro-hud {
+  position: absolute;
+  left: 76px;
+  right: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  animation: omtIntroFade 0.6s ease 0.2s both;
+}
+
+.omt-hud-top {
+  top: 36px;
+}
+
+.omt-hud-bottom {
+  bottom: 34px;
+}
+
+.omt-intro-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #ffffff;
+}
+
+.omt-intro-rec i {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--omt-intro-red);
+  box-shadow: 0 0 10px var(--omt-intro-red);
+  animation: omtIntroBlink 1s steps(2, start) infinite;
+}
+
+.omt-intro-rec b {
+  margin-left: 6px;
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.omt-intro-progress {
+  position: relative;
+  flex: 1;
+  max-width: 260px;
+  height: 2px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.omt-intro-progress i {
+  position: absolute;
+  inset: 0;
+  background: var(--omt-intro-red);
+  transform-origin: left center;
+  animation: omtIntroProgress 2.95s cubic-bezier(0.45, 0.05, 0.25, 1) both;
+}
+
+.omt-intro-skip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.8);
+  font: inherit;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.omt-intro-skip span {
+  transition: transform 0.3s var(--omt-intro-ease);
+}
+
+.omt-intro-skip:hover {
+  border-color: var(--omt-intro-red);
+  background: rgba(237, 17, 27, 0.15);
+  color: #ffffff;
+}
+
+.omt-intro-skip:hover span {
+  transform: translateX(4px);
+}
+
+.omt-intro-skip:focus-visible {
+  outline: 2px solid var(--omt-intro-red);
+  outline-offset: 3px;
+}
+
+/* FILM LEADER COUNTDOWN */
+.omt-intro-leader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: min(300px, 62vw);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 0.45s ease,
+    transform 0.6s var(--omt-intro-ease);
+}
+
+.omt-intro.is-brand .omt-intro-leader,
+.omt-intro.is-leaving .omt-intro-leader {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.5);
+}
+
+.omt-leader-sweep {
+  position: absolute;
+  inset: 8%;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(237, 17, 27, 0.55),
+    rgba(237, 17, 27, 0.05) 70%,
+    transparent 100%
+  );
+  animation: omtIntroSweep 0.55s linear infinite;
+}
+
+.omt-leader-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+}
+
+.omt-leader-ring-outer {
+  inset: 0;
+}
+
+.omt-leader-ring-inner {
+  inset: 14%;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
+.omt-leader-cross {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.omt-leader-cross-x {
+  left: -12%;
+  right: -12%;
+  top: 50%;
+  height: 1px;
+}
+
+.omt-leader-cross-y {
+  top: -12%;
+  bottom: -12%;
+  left: 50%;
+  width: 1px;
+}
+
+.omt-leader-number {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(90px, 18vw, 150px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -4px;
+  text-shadow: 0 0 30px rgba(237, 17, 27, 0.6);
+  animation: omtIntroNumber 0.55s var(--omt-intro-ease) both;
+}
+
+/* BRAND */
+.omt-intro-brand {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 0 20px;
+  text-align: center;
+  visibility: hidden;
+}
+
+.omt-intro.is-brand .omt-intro-brand,
+.omt-intro.is-leaving .omt-intro-brand {
+  visibility: visible;
+}
+
+.omt-intro-slate,
+.omt-intro-tagline {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  opacity: 0;
+}
+
+.omt-intro-slate {
+  color: var(--omt-intro-red);
+}
+
+.omt-intro-tagline {
+  color: rgba(255, 255, 255, 0.65);
+  letter-spacing: 3px;
+}
+
+.omt-intro.is-brand .omt-intro-slate {
+  animation: omtIntroFadeUp 0.6s var(--omt-intro-ease) 0.05s both;
+}
+
+.omt-intro.is-brand .omt-intro-tagline {
+  animation: omtIntroTagline 0.9s var(--omt-intro-ease) 0.6s both;
+}
+
+.omt-intro-title {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0 0.28em;
+  margin: 0;
+  font-size: clamp(44px, 9vw, 120px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.omt-intro-word {
+  display: inline-flex;
+}
+
+.omt-intro-word.is-red {
+  color: var(--omt-intro-red);
+  text-shadow: 0 0 40px rgba(237, 17, 27, 0.45);
+}
+
+.omt-intro-letter-mask {
+  display: inline-block;
+  overflow: hidden;
+  padding: 0.04em 0.01em 0.08em;
+  margin: -0.04em -0.01em -0.08em;
+}
+
+.omt-intro-letter {
+  display: inline-block;
+  transform: translateY(115%);
+}
+
+.omt-intro.is-brand .omt-intro-letter,
+.omt-intro.is-leaving .omt-intro-letter {
+  animation: omtIntroLetter 0.75s var(--omt-intro-ease) both;
+  animation-delay: calc(var(--i) * 0.04s);
+}
+
+/* KEYFRAMES */
+@keyframes omtIntroFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes omtIntroFadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes omtIntroTagline {
+  from { opacity: 0; letter-spacing: 8px; }
+  to { opacity: 1; letter-spacing: 3px; }
+}
+
+@keyframes omtIntroLetter {
+  from { transform: translateY(115%) rotate(6deg); }
+  to { transform: translateY(0) rotate(0); }
+}
+
+@keyframes omtIntroNumber {
+  0% { opacity: 0; transform: scale(1.6); filter: blur(8px); }
+  35% { opacity: 1; transform: scale(1); filter: blur(0); }
+  85% { opacity: 1; }
+  100% { opacity: 0.2; transform: scale(0.92); }
+}
+
+@keyframes omtIntroSweep {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes omtIntroCorner {
+  from { opacity: 0; transform: scale(1.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes omtIntroBlink {
+  to { visibility: hidden; }
+}
+
+@keyframes omtIntroProgress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes omtIntroGrain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3%, 2%); }
+  50% { transform: translate(2%, -3%); }
+  75% { transform: translate(-2%, -1%); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes omtIntroFlash {
+  0% { opacity: 0; transform: scaleX(0); }
+  25% { opacity: 1; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1) scaleY(6); }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .omt-intro-corner {
+    width: 24px;
+    height: 24px;
+  }
+
+  .omt-corner-tl,
+  .omt-corner-tr {
+    top: 18px;
+  }
+
+  .omt-corner-bl,
+  .omt-corner-br {
+    bottom: 18px;
+  }
+
+  .omt-corner-tl,
+  .omt-corner-bl {
+    left: 18px;
+  }
+
+  .omt-corner-tr,
+  .omt-corner-br {
+    right: 18px;
+  }
+
+  .omt-intro-hud {
+    left: 52px;
+    right: 52px;
+    font-size: 8px;
+    letter-spacing: 1.5px;
+  }
+
+  .omt-hud-top > span:last-child {
+    display: none;
+  }
+
+  .omt-hud-top {
+    top: 25px;
+  }
+
+  .omt-hud-bottom {
+    bottom: 22px;
+  }
+
+  .omt-intro-skip {
+    padding: 8px 12px;
+  }
+
+  .omt-intro-slate,
+  .omt-intro-tagline {
+    font-size: 9px;
+  }
+}

@@ -1,10 +1,11 @@
-
 /* =========================================
    ONE MORE TAKE — HERO SECTION
    Matches Hero.jsx omt- class names
 ========================================= */
 
 .omt-hero {
+  --omt-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
   position: relative;
   display: flex;
   align-items: center;
@@ -115,7 +116,15 @@
   letter-spacing: -5px;
 }
 
+/* Each line is a mask, the inner text slides up into it */
 .omt-hero-title > span {
+  display: block;
+  overflow: hidden;
+  padding: 0 0.08em 0.08em 3px;
+  margin: 0 -0.08em -0.08em -3px;
+}
+
+.omt-title-inner {
   display: block;
 }
 
@@ -299,7 +308,6 @@
   object-fit: contain;
   transform: translate(-50%, -50%);
   filter: drop-shadow(15px 25px 25px rgba(0, 0, 0, 0.16));
-  animation: omtCameraFloat 6s ease-in-out infinite;
 }
 
 .omt-camera-caption {
@@ -477,6 +485,292 @@
   animation: omtScrollLine 1.5s ease-in-out infinite alternate;
 }
 
+/* =========================================
+   HERO ENTRANCE ANIMATION
+   Hidden until the intro finishes (.is-revealed),
+   then every piece animates in one after another
+========================================= */
+
+.omt-hero:not(.is-revealed) .omt-hero-counter,
+.omt-hero:not(.is-revealed) .omt-hero-eyebrow,
+.omt-hero:not(.is-revealed) .omt-description-line,
+.omt-hero:not(.is-revealed) .omt-hero-description p,
+.omt-hero:not(.is-revealed) .omt-hero-actions,
+.omt-hero:not(.is-revealed) .omt-hero-stats > div,
+.omt-hero:not(.is-revealed) .omt-hero-glow,
+.omt-hero:not(.is-revealed) .omt-visual-ring,
+.omt-hero:not(.is-revealed) .omt-camera-tag,
+.omt-hero:not(.is-revealed) .omt-camera-caption,
+.omt-hero:not(.is-revealed) .omt-edit-card,
+.omt-hero:not(.is-revealed) .omt-handwriting,
+.omt-hero:not(.is-revealed) .omt-scroll-hint {
+  opacity: 0;
+}
+
+.omt-hero:not(.is-revealed) .omt-title-inner {
+  transform: translateY(110%);
+}
+
+/* Left side */
+.omt-hero.is-revealed .omt-hero-counter {
+  animation: omtInLeft 0.8s var(--omt-ease) 0s both;
+}
+
+.omt-hero.is-revealed .omt-hero-eyebrow {
+  animation: omtInUp 0.8s var(--omt-ease) 0.1s both;
+}
+
+.omt-hero.is-revealed .omt-title-inner {
+  animation: omtLineUp 1s var(--omt-ease) both;
+  animation-delay: calc(0.18s + var(--line, 0) * 0.1s);
+}
+
+.omt-hero.is-revealed .omt-description-line {
+  transform-origin: top center;
+  animation: omtGrowY 0.8s var(--omt-ease) 0.6s both;
+}
+
+.omt-hero.is-revealed .omt-hero-description p {
+  animation: omtInUp 0.8s var(--omt-ease) 0.68s both;
+}
+
+.omt-hero.is-revealed .omt-hero-actions {
+  animation: omtInUp 0.8s var(--omt-ease) 0.8s both;
+}
+
+.omt-hero.is-revealed .omt-hero-stats > div {
+  animation: omtInUp 0.8s var(--omt-ease) 0.95s both;
+}
+
+.omt-hero.is-revealed .omt-hero-stats > div:nth-child(2) {
+  animation-delay: 1.05s;
+}
+
+.omt-hero.is-revealed .omt-hero-stats > div:nth-child(3) {
+  animation-delay: 1.15s;
+}
+
+/* Right side */
+.omt-hero.is-revealed .omt-hero-glow {
+  animation: omtGlowIn 1.6s var(--omt-ease) 0s both;
+}
+
+.omt-hero.is-revealed .omt-ring-one {
+  animation: omtRingIn 1.2s var(--omt-ease) 0.2s both;
+}
+
+.omt-hero.is-revealed .omt-ring-two {
+  animation:
+    omtFadeIn 1s ease 0.35s both,
+    omtRingRotate 35s linear infinite;
+}
+
+/* =========================================
+   CAMERA: EXPLODED VIEW (parts separate and rebuild)
+   Phase class on .omt-hero-visual (set by Hero.jsx):
+   cam-hidden -> cam-assembled -> cam-whole -> cam-broken -> cam-assembled ...
+========================================= */
+
+/* The real camera image is only shown when it is whole */
+.omt-camera-main {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.omt-hero-visual.cam-whole .omt-camera-main {
+  opacity: 1;
+  animation:
+    omtCameraSnap 0.6s var(--omt-ease) both,
+    omtCameraFloat 6s ease-in-out 0.6s infinite;
+}
+
+/* Parts live in a box that matches exactly where the photo is drawn
+   (size and position are measured in Hero.jsx). --u = 1% of its width. */
+.omt-camera-parts {
+  --k: 1; /* how far parts spread when exploded */
+
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+}
+
+@media (max-width: 800px) {
+  .omt-camera-parts {
+    --k: 0.5;
+  }
+}
+
+/* Each part: a copy of the photo clipped to one real component */
+.omt-camera-shard {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  user-select: none;
+  will-change: transform, opacity;
+  transform:
+    translate(calc(var(--dx) * var(--u) * var(--k)), calc(var(--dy) * var(--u) * var(--k)))
+    rotate(var(--rot, 0deg));
+  transition:
+    transform 1.1s cubic-bezier(0.65, 0, 0.35, 1) var(--d),
+    opacity 0.45s ease var(--d);
+}
+
+/* Sliding back together */
+.omt-hero-visual.cam-assembled .omt-camera-shard {
+  opacity: 1;
+  transform: none;
+}
+
+/* Whole camera shown: parts stay in place but hidden */
+.omt-hero-visual.cam-whole .omt-camera-shard {
+  opacity: 0;
+  transform: none;
+  transition: opacity 0.25s ease 0.08s;
+}
+
+/* Exploding: every part slides out along its own axis */
+.omt-hero-visual.cam-broken .omt-camera-shard {
+  opacity: 1;
+  transition:
+    transform 1.2s cubic-bezier(0.65, 0, 0.35, 1) calc(0.3s - var(--d)),
+    opacity 0s;
+}
+
+/* Fade the edit card while exploded so the camera body is visible
+   (filter is used because the entrance animation controls opacity) */
+.omt-edit-card {
+  transition: filter 0.5s ease;
+}
+
+.omt-hero-visual.cam-broken .omt-edit-card {
+  filter: opacity(0.12) blur(1px);
+}
+
+/* Technical-drawing axis lines + screws (visible only when exploded) */
+.omt-guide-line {
+  position: absolute;
+  opacity: 0;
+  transition:
+    opacity 0.4s ease,
+    transform 0.5s ease;
+}
+
+.omt-guide-x {
+  left: -45%;
+  right: -12%;
+  height: 0;
+  border-top: 1px dashed rgba(237, 17, 27, 0.5);
+  transform: scaleX(0);
+  transform-origin: right center;
+}
+
+.omt-guide-y {
+  top: -32%;
+  bottom: -32%;
+  width: 0;
+  border-left: 1px dashed rgba(237, 17, 27, 0.5);
+  transform: scaleY(0);
+}
+
+.omt-hero-visual.cam-broken .omt-guide-line {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.5s ease 0.35s,
+    transform 1.1s cubic-bezier(0.65, 0, 0.35, 1) 0.2s;
+}
+
+.omt-guide-screw {
+  position: absolute;
+  z-index: 1;
+  width: 9px;
+  height: 9px;
+  margin: -4.5px 0 0 -4.5px;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 44%, rgba(0, 0, 0, 0.55) 45% 55%, transparent 56%),
+    radial-gradient(circle at 35% 30%, #f2f2f2, #8c8c8c 70%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+  opacity: 0;
+  transform: scale(0);
+  transition:
+    opacity 0.3s ease,
+    transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.omt-hero-visual.cam-broken .omt-guide-screw {
+  opacity: 1;
+  transform:
+    translate(calc(var(--dx) * var(--u) * var(--k)), calc(var(--dy) * var(--u) * var(--k)))
+    scale(1)
+    rotate(180deg);
+  transition:
+    opacity 0.3s ease var(--d),
+    transform 1.1s cubic-bezier(0.65, 0, 0.35, 1) var(--d);
+}
+
+/* Red flash ring when the camera snaps together */
+.omt-camera-flash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: min(80%, 460px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 2px solid rgba(237, 17, 27, 0.55);
+  box-shadow: 0 0 40px rgba(237, 17, 27, 0.35);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.6);
+  pointer-events: none;
+}
+
+.omt-hero-visual.cam-whole .omt-camera-flash {
+  animation: omtCameraFlash 0.9s var(--omt-ease) both;
+}
+
+.omt-hero.is-revealed .omt-camera-tag {
+  animation: omtInRight 0.8s var(--omt-ease) 0.9s both;
+}
+
+.omt-hero.is-revealed .omt-edit-card {
+  animation: omtCardIn 0.9s var(--omt-ease) 1s both;
+}
+
+.omt-hero.is-revealed .omt-timeline-clips i {
+  transform-origin: left center;
+  animation: omtGrowX 0.5s var(--omt-ease) 1.35s both;
+}
+
+.omt-hero.is-revealed .omt-timeline-clips i:nth-child(2) {
+  animation-delay: 1.43s;
+}
+
+.omt-hero.is-revealed .omt-timeline-clips i:nth-child(3) {
+  animation-delay: 1.51s;
+}
+
+.omt-hero.is-revealed .omt-timeline-clips i:nth-child(4) {
+  animation-delay: 1.59s;
+}
+
+.omt-hero.is-revealed .omt-handwriting {
+  animation: omtWrite 1.2s ease-out 1.15s both;
+}
+
+.omt-hero.is-revealed .omt-camera-caption {
+  animation: omtInUp 0.8s var(--omt-ease) 1.2s both;
+}
+
+.omt-hero.is-revealed .omt-scroll-hint {
+  animation: omtFadeIn 0.8s ease 1.4s both;
+}
+
 /* MARQUEE */
 
 .omt-marquee {
@@ -554,6 +848,81 @@
 @keyframes omtMarqueeScroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
+}
+
+/* Entrance keyframes */
+@keyframes omtFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes omtInUp {
+  from { opacity: 0; transform: translateY(26px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes omtInLeft {
+  from { opacity: 0; transform: translateX(-30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes omtInRight {
+  from { opacity: 0; transform: translateX(30px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes omtLineUp {
+  from { transform: translateY(110%) skewY(6deg); }
+  to { transform: translateY(0) skewY(0); }
+}
+
+@keyframes omtGrowY {
+  from { opacity: 0; transform: scaleY(0); }
+  to { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes omtGrowX {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes omtGlowIn {
+  from { opacity: 0; transform: scale(0.5); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes omtRingIn {
+  from { opacity: 0; transform: translate(-50%, -50%) scale(0.55); }
+  to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes omtCameraSnap {
+  0% { transform: translate(-50%, -50%) scale(1.035); }
+  45% { transform: translate(-50%, -50%) scale(0.985); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@keyframes omtCameraFlash {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.15); }
+}
+
+@keyframes omtCardIn {
+  from { opacity: 0; transform: translateY(45px) scale(0.92); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Handwriting appears left to right, like it's being written */
+@keyframes omtWrite {
+  from {
+    opacity: 1;
+    clip-path: inset(-20% 100% -20% -20%);
+  }
+  to {
+    opacity: 1;
+    clip-path: inset(-20% -20% -20% -20%);
+  }
 }
 
 /* TABLET */
@@ -780,21 +1149,5 @@
 
   .omt-marquee-group span {
     font-size: 14px;
-  }
-}
-
-/* REDUCED MOTION */
-
-@media (prefers-reduced-motion: reduce) {
-  .omt-hero *,
-  .omt-marquee-track,
-  .omt-marquee-group *,
-  .omt-live-dot,
-  .omt-visual-ring,
-  .omt-hero-camera,
-  .omt-audio-wave i,
-  .omt-scroll-hint i::after {
-    animation: none !important;
-    transition: none !important;
   }
 }
