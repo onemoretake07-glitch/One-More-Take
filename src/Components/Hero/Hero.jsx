@@ -3,16 +3,19 @@ import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
 import HeroIntro, { shouldPlayIntro } from "./HeroIntro";
 import HeroConfetti from "./HeroConfetti";
+import FestivalBanner from "../Festival/FestivalBanner";
+import { useSiteContent } from "../../content/useSiteContent";
+import { MultiLine } from "../../content/ContentText";
 import "./Hero.css";
 
 const DEFAULT_HERO_IMAGE = "/cinema-camera.png";
 
-const TITLE_LINES = [
-  { text: "IDEAS", className: "" },
-  { text: "DESERVE", className: "" },
-  { text: "A BETTER", className: "omt-red" },
-  { text: "TAKE.", className: "omt-red omt-outline" },
-];
+// Title line style (from admin) -> CSS classes
+const TITLE_STYLE_CLASSES = {
+  normal: "",
+  red: "omt-red",
+  outline: "omt-red omt-outline",
+};
 
 // Camera exploded-view timing (ms)
 const CAMERA_START_MS = 250; // after the hero is revealed
@@ -152,6 +155,8 @@ function getContainedImageBox(img) {
 
 const Hero = () => {
   const [heroImage, setHeroImage] = useState(DEFAULT_HERO_IMAGE);
+  const content = useSiteContent("hero");
+  const titleLines = content.titleLines.filter((line) => line.text);
   const [playIntro] = useState(shouldPlayIntro);
   const [revealed, setRevealed] = useState(() => !playIntro);
   const [celebrate, setCelebrate] = useState(false);
@@ -246,6 +251,9 @@ const Hero = () => {
       {playIntro && <HeroIntro onReveal={handleIntroReveal} />}
       {celebrate && <HeroConfetti />}
 
+      {/* Festival offer banner (only when switched on in the admin panel) */}
+      <FestivalBanner revealed={revealed} />
+
       <section
         className={`omt-hero ${revealed ? "is-revealed" : ""}`}
         id="home"
@@ -262,14 +270,17 @@ const Hero = () => {
         <div className="omt-hero-content">
           <div className="omt-hero-eyebrow">
             <span className="omt-live-dot"></span>
-            CREATIVE VIDEO PRODUCTION STUDIO
+            {content.eyebrow}
           </div>
 
-          <h1 className="omt-hero-title" aria-label="Ideas deserve a better take.">
-            {TITLE_LINES.map((line, index) => (
+          <h1
+            className="omt-hero-title"
+            aria-label={titleLines.map((line) => line.text).join(" ")}
+          >
+            {titleLines.map((line, index) => (
               <span
-                className={line.className}
-                key={line.text}
+                className={TITLE_STYLE_CLASSES[line.style] || ""}
+                key={index}
                 aria-hidden="true"
               >
                 <span className="omt-title-inner" style={{ "--line": index }}>
@@ -282,41 +293,29 @@ const Hero = () => {
           <div className="omt-hero-description">
             <span className="omt-description-line"></span>
             <p>
-              We shoot. We edit. We create.
-              <br />
-              Visual stories that make people stop,
-              <br />
-              watch and remember.
+              <MultiLine text={content.description} />
             </p>
           </div>
 
           <div className="omt-hero-actions">
             <a href="#work" className="omt-hero-primary">
               <span className="omt-play-icon">▶</span>
-              Explore Our Work
+              {content.primaryButton}
               <span className="omt-action-arrow">↗</span>
             </a>
 
             <a href="#services" className="omt-hero-secondary">
-              Discover Our Services <span>↓</span>
+              {content.secondaryButton} <span>↓</span>
             </a>
           </div>
 
           <div className="omt-hero-stats">
-            <div>
-              <strong>01</strong>
-              <span>CREATIVE STUDIO</span>
-            </div>
-
-            <div>
-              <strong>∞</strong>
-              <span>STORIES TO TELL</span>
-            </div>
-
-            <div>
-              <strong>4K</strong>
-              <span>DETAIL IN EVERY FRAME</span>
-            </div>
+            {content.stats.map((stat, index) => (
+              <div key={index}>
+                <strong>{stat.value}</strong>
+                <span>{stat.label}</span>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -326,7 +325,7 @@ const Hero = () => {
 
           <div className="omt-camera-tag">
             <span className="omt-live-dot"></span>
-            PRODUCTION IN PROGRESS
+            {content.cameraTag}
           </div>
 
           <span className="omt-camera-flash" aria-hidden="true" />
@@ -407,8 +406,8 @@ const Hero = () => {
           />
 
           <div className="omt-camera-caption">
-            <span>CAM 01 / MAIN SHOT</span>
-            <span>● REC</span>
+            <span>{content.captionLeft}</span>
+            <span>{content.captionRight}</span>
           </div>
 
           <div className="omt-edit-card">
@@ -443,19 +442,13 @@ const Hero = () => {
           </div>
 
           <div className="omt-handwriting">
-            Shoot.
-            <br />
-            Edit.
-            <br />
-            Create.
-            <br />
-            Inspire.
+            <MultiLine text={content.handwriting.join("\n")} />
             <span></span>
           </div>
         </div>
 
         <a className="omt-scroll-hint" href="#about">
-          <span>SCROLL TO EXPLORE</span>
+          <span>{content.scrollHint}</span>
           <i></i>
         </a>
       </section>

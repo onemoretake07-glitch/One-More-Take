@@ -1,0 +1,490 @@
+/* =========================================
+   ONE MORE TAKE — FESTIVAL SECTION
+   First homepage section, switched on from the admin panel
+========================================= */
+
+.omt-festival {
+  --fest-a: #ed111b;
+  --fest-b: #7a060c;
+  --fest-glow: rgba(255, 120, 120, 0.55);
+  --fest-accent: #ffd36b;
+  --fest-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 560px;
+  padding: 130px 5% 80px;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 78% 45%, var(--fest-glow), transparent 45%),
+    radial-gradient(circle at 10% 110%, rgba(255, 255, 255, 0.12), transparent 40%),
+    linear-gradient(135deg, var(--fest-a) 0%, var(--fest-b) 100%);
+  color: #ffffff;
+  box-sizing: border-box;
+}
+
+.omt-festival *,
+.omt-festival *::before,
+.omt-festival *::after {
+  box-sizing: border-box;
+}
+
+/* Colour themes */
+.omt-festival.theme-gold {
+  --fest-a: #f59e0b;
+  --fest-b: #9a3412;
+  --fest-glow: rgba(255, 221, 120, 0.6);
+  --fest-accent: #fff1b8;
+}
+
+.omt-festival.theme-purple {
+  --fest-a: #7c3aed;
+  --fest-b: #4a044e;
+  --fest-glow: rgba(236, 160, 255, 0.5);
+  --fest-accent: #ffd36b;
+}
+
+.omt-festival.theme-green {
+  --fest-a: #059669;
+  --fest-b: #053b2f;
+  --fest-glow: rgba(150, 255, 200, 0.45);
+  --fest-accent: #ffe08a;
+}
+
+.omt-festival.theme-blue {
+  --fest-a: #1d4ed8;
+  --fest-b: #0b1023;
+  --fest-glow: rgba(140, 180, 255, 0.5);
+  --fest-accent: #ffd36b;
+}
+
+/* Hanging string lights */
+.omt-festival-lights {
+  position: absolute;
+  top: 78px;
+  left: -2%;
+  right: -2%;
+  z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  height: 60px;
+  pointer-events: none;
+}
+
+.omt-festival-lights::before {
+  content: "";
+  position: absolute;
+  top: -30px;
+  left: 0;
+  right: 0;
+  height: 60px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.35);
+  border-radius: 0 0 50% 50% / 0 0 100% 100%;
+}
+
+.omt-festival-lights i {
+  position: relative;
+  top: calc(18px + sin(var(--i) / 17 * 3.1416) * 12px);
+  width: 12px;
+  height: 18px;
+  border-radius: 50% 50% 45% 45%;
+  background: var(--fest-accent);
+  box-shadow:
+    0 0 10px 2px var(--fest-accent),
+    0 0 26px 6px rgba(255, 230, 150, 0.45);
+  transform-origin: 50% -14px;
+  animation:
+    festSwing 3.2s ease-in-out infinite alternate,
+    festTwinkle 1.6s ease-in-out infinite;
+  animation-delay: calc(var(--i) * -0.27s), calc(var(--i) * -0.19s);
+}
+
+.omt-festival-lights i:nth-child(3n) {
+  background: #ffffff;
+  box-shadow: 0 0 10px 2px #ffffff, 0 0 24px 6px rgba(255, 255, 255, 0.4);
+}
+
+.omt-festival-lights i::before {
+  content: "";
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 6px;
+  height: 7px;
+  border-radius: 2px;
+  background: rgba(20, 20, 20, 0.6);
+  transform: translateX(-50%);
+}
+
+/* Slowly rotating light rays */
+.omt-festival-rays {
+  position: absolute;
+  top: 50%;
+  right: -10%;
+  z-index: -1;
+  width: 1100px;
+  aspect-ratio: 1;
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.07) 0deg 8deg,
+    transparent 8deg 22deg
+  );
+  border-radius: 50%;
+  mask-image: radial-gradient(circle, black 15%, transparent 65%);
+  transform: translateY(-50%);
+  animation: festRotate 60s linear infinite;
+}
+
+/* Falling sparkles */
+.omt-festival-sparkles {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.omt-festival-sparkles i {
+  position: absolute;
+  top: -20px;
+  left: calc(var(--i) * 4.6% + 1%);
+  width: 8px;
+  height: 8px;
+  background: var(--fest-accent);
+  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+  opacity: 0;
+  animation: festFall linear infinite;
+  animation-duration: calc(6s + (var(--i) * 0.37s));
+  animation-delay: calc(var(--i) * -0.83s);
+}
+
+.omt-festival-sparkles i:nth-child(odd) {
+  width: 5px;
+  height: 5px;
+  background: #ffffff;
+}
+
+/* Layout */
+.omt-festival-inner {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  align-items: center;
+  gap: 40px;
+  width: 100%;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+.omt-festival-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  font-family: "DM Sans", sans-serif;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 3px;
+}
+
+.omt-festival-eyebrow b {
+  color: var(--fest-accent);
+  animation: festTwinkle 1.4s ease-in-out infinite;
+}
+
+.omt-festival-title {
+  margin: 22px 0 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(48px, 7.4vw, 112px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  background: linear-gradient(100deg, #ffffff 0%, #ffffff 40%, var(--fest-accent) 50%, #ffffff 60%, #ffffff 100%);
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+  animation: festShimmer 4s ease-in-out infinite;
+}
+
+.omt-festival-subtitle {
+  max-width: 560px;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: clamp(15px, 1.5vw, 19px);
+  line-height: 1.6;
+}
+
+.omt-festival-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-top: 30px;
+}
+
+/* Ticket-style offer */
+.omt-festival-offer {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px 12px 12px;
+  border: 2px dashed rgba(255, 255, 255, 0.6);
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.15);
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 0.3px;
+}
+
+.omt-festival-offer > span {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--fest-accent);
+  color: var(--fest-b);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.omt-festival-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px 26px;
+  overflow: hidden;
+  border-radius: 40px;
+  background: #ffffff;
+  color: var(--fest-b);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.22);
+  transition:
+    transform 0.3s var(--fest-ease),
+    box-shadow 0.3s var(--fest-ease);
+}
+
+.omt-festival-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 220, 120, 0.6) 50%, transparent 70%);
+  transform: translateX(-120%);
+  animation: festSweep 3s ease-in-out 1.5s infinite;
+}
+
+.omt-festival-button span {
+  transition: transform 0.3s var(--fest-ease);
+}
+
+.omt-festival-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.omt-festival-button:hover span {
+  transform: translate(3px, -3px);
+}
+
+.omt-festival-button:focus-visible {
+  outline: 3px solid var(--fest-accent);
+  outline-offset: 3px;
+}
+
+/* Right side visual */
+.omt-festival-visual {
+  display: flex;
+  justify-content: center;
+}
+
+.omt-festival-visual img {
+  display: block;
+  width: 100%;
+  max-width: 460px;
+  max-height: 420px;
+  border: 4px solid rgba(255, 255, 255, 0.85);
+  border-radius: 26px;
+  object-fit: cover;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.35);
+  animation: festFloat 6s ease-in-out infinite;
+}
+
+.omt-festival-emblem {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(340px, 70vw);
+  aspect-ratio: 1;
+}
+
+.omt-festival-ring {
+  position: absolute;
+  inset: 0;
+  border: 2px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 50%;
+  animation: festSpin 26s linear infinite;
+}
+
+.omt-festival-ring.ring-two {
+  inset: 16%;
+  border-style: solid;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 80px var(--fest-glow), inset 0 0 60px rgba(255, 255, 255, 0.12);
+  animation-direction: reverse;
+  animation-duration: 18s;
+}
+
+.omt-festival-star {
+  color: var(--fest-accent);
+  font-size: clamp(90px, 12vw, 150px);
+  line-height: 1;
+  text-shadow: 0 0 40px var(--fest-accent);
+  animation: festPulse 2.6s ease-in-out infinite;
+}
+
+/* Entrance (after the opening intro) */
+.omt-festival-eyebrow,
+.omt-festival-title,
+.omt-festival-subtitle,
+.omt-festival-actions,
+.omt-festival-visual {
+  opacity: 0;
+}
+
+.omt-festival.is-revealed .omt-festival-eyebrow {
+  animation: festIn 0.8s var(--fest-ease) 0.1s both;
+}
+
+.omt-festival.is-revealed .omt-festival-title {
+  animation:
+    festIn 0.9s var(--fest-ease) 0.2s both,
+    festShimmer 4s ease-in-out 1.2s infinite;
+}
+
+.omt-festival.is-revealed .omt-festival-subtitle {
+  animation: festIn 0.8s var(--fest-ease) 0.35s both;
+}
+
+.omt-festival.is-revealed .omt-festival-actions {
+  animation: festIn 0.8s var(--fest-ease) 0.5s both;
+}
+
+.omt-festival.is-revealed .omt-festival-visual {
+  animation: festZoom 1.1s var(--fest-ease) 0.3s both;
+}
+
+/* Keyframes */
+@keyframes festIn {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes festZoom {
+  from { opacity: 0; transform: scale(0.8) rotate(-4deg); }
+  to { opacity: 1; transform: scale(1) rotate(0); }
+}
+
+@keyframes festSwing {
+  from { transform: rotate(-7deg); }
+  to { transform: rotate(7deg); }
+}
+
+@keyframes festTwinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+@keyframes festRotate {
+  to { transform: translateY(-50%) rotate(360deg); }
+}
+
+@keyframes festSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes festFall {
+  0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateY(620px) rotate(540deg); }
+}
+
+@keyframes festShimmer {
+  0%, 100% { background-position: 100% 0; }
+  50% { background-position: 0 0; }
+}
+
+@keyframes festSweep {
+  0% { transform: translateX(-120%); }
+  40%, 100% { transform: translateX(120%); }
+}
+
+@keyframes festFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes festPulse {
+  0%, 100% { transform: scale(1) rotate(0deg); }
+  50% { transform: scale(1.12) rotate(18deg); }
+}
+
+/* Tablet & mobile */
+@media (max-width: 900px) {
+  .omt-festival {
+    min-height: auto;
+    padding: 120px 6% 70px;
+  }
+
+  .omt-festival-inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 34px;
+    text-align: center;
+  }
+
+  .omt-festival-subtitle {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .omt-festival-actions {
+    justify-content: center;
+  }
+
+  .omt-festival-emblem {
+    width: min(220px, 60vw);
+  }
+
+  .omt-festival-lights {
+    top: 68px;
+  }
+
+  .omt-festival-lights i:nth-child(even) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .omt-festival-offer {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .omt-festival-button {
+    width: 100%;
+    justify-content: center;
+  }
+}

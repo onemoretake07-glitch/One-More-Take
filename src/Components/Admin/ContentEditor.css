@@ -1,0 +1,496 @@
+/* =========================================
+   ADMIN — WEBSITE CONTENT EDITOR
+========================================= */
+
+.content-editor {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.content-editor.is-single {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Section list */
+.ce-sections {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  border: 1px solid #e7e8ec;
+  border-radius: 15px;
+  background: #fff;
+}
+
+.ce-sections button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: #3a3f4d;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ce-sections button span {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 7px;
+  background: #f1f2f5;
+  font-size: 13px;
+}
+
+.ce-sections button:hover {
+  background: #f6f6f8;
+}
+
+.ce-sections button.active {
+  background: #fff1f1;
+  color: #d40f18;
+}
+
+.ce-sections button.active span {
+  background: #ed111b;
+  color: #fff;
+}
+
+/* Panel */
+.ce-panel {
+  padding-bottom: 0;
+}
+
+.ce-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.ce-header h2 {
+  margin: 4px 0 6px;
+}
+
+.ce-header a {
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.ce-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-bottom: 24px;
+}
+
+/* Fields */
+.ce-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ce-field > label {
+  color: #252a36;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ce-field small {
+  color: #7a7f8c;
+  font-size: 12px;
+}
+
+.ce-field input[type="text"],
+.ce-field input[type="url"],
+.ce-field input[type="number"],
+.ce-field input[type="date"],
+.ce-field select,
+.ce-field textarea,
+.ce-list-row input,
+.ce-list-row textarea {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1px solid #dfe1e7;
+  border-radius: 9px;
+  background: #f8f9fb;
+  color: #171923;
+  font: inherit;
+  font-size: 14px;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.ce-field textarea,
+.ce-list-row textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.ce-field input:focus,
+.ce-field select:focus,
+.ce-field textarea:focus,
+.ce-list-row input:focus,
+.ce-list-row textarea:focus {
+  outline: none;
+  border-color: #ed111b;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(237, 17, 27, 0.12);
+}
+
+.ce-field input[type="number"] {
+  max-width: 220px;
+}
+
+.ce-field input[type="date"],
+.ce-field select {
+  max-width: 360px;
+}
+
+/* Toggle switch */
+.ce-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  width: fit-content;
+  font-size: 14px;
+  font-weight: 700;
+  color: #252a36;
+  cursor: pointer;
+}
+
+.ce-toggle input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.ce-toggle-track {
+  position: relative;
+  flex-shrink: 0;
+  width: 46px;
+  height: 26px;
+  border-radius: 20px;
+  background: #d5d8df;
+  transition: background-color 0.25s ease;
+}
+
+.ce-toggle-track::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease;
+}
+
+.ce-toggle input:checked + .ce-toggle-track {
+  background: #ed111b;
+}
+
+.ce-toggle input:checked + .ce-toggle-track::after {
+  transform: translateX(20px);
+}
+
+.ce-toggle input:focus-visible + .ce-toggle-track {
+  outline: 2px solid #ed111b;
+  outline-offset: 2px;
+}
+
+/* Lists */
+.ce-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ce-list-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.ce-list-item {
+  border: 1px solid #e3e5ea;
+  border-radius: 11px;
+  background: #fbfbfc;
+}
+
+.ce-list-item[open] {
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(25, 30, 45, 0.05);
+}
+
+.ce-list-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #3a3f4d;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ce-list-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.ce-list-item summary > span::before {
+  content: "▸";
+  display: inline-block;
+  margin-right: 8px;
+  transition: transform 0.2s ease;
+}
+
+.ce-list-item[open] summary > span::before {
+  transform: rotate(90deg);
+}
+
+.ce-list-item summary b {
+  margin-left: 8px;
+  color: #171923;
+  font-weight: 600;
+}
+
+.ce-list-item-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 6px 14px 16px;
+  border-top: 1px solid #eef0f3;
+}
+
+.ce-item-controls {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+.ce-item-controls button {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #e1e3e9;
+  border-radius: 8px;
+  background: #fff;
+  color: #4b5160;
+  font: inherit;
+  cursor: pointer;
+}
+
+.ce-item-controls button:hover:not(:disabled) {
+  border-color: #ed111b;
+  color: #ed111b;
+}
+
+.ce-item-controls button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.ce-item-controls .ce-remove:hover:not(:disabled) {
+  background: #ed111b;
+  color: #fff;
+}
+
+.ce-add {
+  width: fit-content;
+  padding: 9px 14px;
+  border: 1px dashed #c9ccd4;
+  border-radius: 9px;
+  background: transparent;
+  color: #4b5160;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.ce-add:hover {
+  border-color: #ed111b;
+  color: #ed111b;
+}
+
+/* Image field */
+.ce-image {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.ce-image-preview,
+.ce-image-empty {
+  width: 150px;
+  height: 100px;
+  border: 1px solid #e3e5ea;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #f1f2f5;
+}
+
+.ce-image-empty {
+  display: grid;
+  place-items: center;
+  color: #9a9fab;
+  font-size: 12px;
+}
+
+.ce-image-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.ce-upload-button {
+  cursor: pointer;
+}
+
+.ce-image .admin-error {
+  width: 100%;
+  margin: 0;
+}
+
+/* Festival status */
+.ce-festival-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #f4f5f7;
+  color: #4b5160;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.ce-festival-status i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #9a9fab;
+}
+
+.ce-festival-status.is-live {
+  background: #e9f9ef;
+  color: #137a3a;
+}
+
+.ce-festival-status.is-live i {
+  background: #1fb35a;
+  box-shadow: 0 0 0 4px rgba(31, 179, 90, 0.2);
+  animation: cePulse 1.4s ease-in-out infinite;
+}
+
+.ce-festival-status.is-scheduled {
+  background: #fff7e6;
+  color: #9a6400;
+}
+
+.ce-festival-status.is-scheduled i {
+  background: #f0a400;
+}
+
+@keyframes cePulse {
+  50% {
+    box-shadow: 0 0 0 7px rgba(31, 179, 90, 0.05);
+  }
+}
+
+/* Sticky save bar */
+.ce-save-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 -27px;
+  padding: 14px 27px;
+  border-top: 1px solid #e7e8ec;
+  border-radius: 0 0 15px 15px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(6px);
+  color: #7a7f8c;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ce-save-bar.is-dirty {
+  color: #c40d16;
+}
+
+.ce-save-bar > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* The login form's full-width button style shouldn't apply in the save bar */
+.ce-save-bar .admin-primary-button,
+.ce-save-bar .admin-secondary-button,
+.ce-header .admin-secondary-button,
+.ce-image-actions .admin-secondary-button,
+.ce-image-actions .admin-danger-button {
+  width: auto;
+  min-height: 40px;
+  margin-top: 0;
+}
+
+.admin-error p {
+  margin: 0;
+}
+
+.admin-error p + p {
+  margin-top: 6px;
+}
+
+/* Mobile */
+@media (max-width: 860px) {
+  .content-editor {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ce-sections {
+    position: static;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .ce-sections button {
+    flex-shrink: 0;
+  }
+
+  .ce-header {
+    flex-direction: column;
+  }
+
+  .ce-save-bar {
+    margin: 0 -18px;
+    padding: 12px 18px;
+  }
+}

@@ -1,21 +1,20 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useSiteContent } from "../../content/useSiteContent";
 import "./HeroIntro.css";
 
-const FPS = 24;
-
 // Timeline (ms)
-const COUNT_STEP_MS = 550; // 3 -> 2 -> 1
-const BRAND_AT_MS = COUNT_STEP_MS * 3; // brand name appears
-const LEAVE_AT_MS = BRAND_AT_MS + 1300; // shutter opens
-const REVEAL_AFTER_LEAVE_MS = 250; // hero animations start
-const REMOVE_AFTER_LEAVE_MS = 1300; // intro removed from page
+const BRAND_AT_MS = 900; // lens has landed, brand name appears
+const LEAVE_AT_MS = 2700; // lens opens and reveals the website
+const REVEAL_AFTER_LEAVE_MS = 300; // hero animations start
+const REMOVE_AFTER_LEAVE_MS = 1400; // intro removed from page
 
-const BRAND_WORDS = ["ONE", "MORE", "TAKE"].map((word, wordIndex, words) => ({
-  word,
-  // index of this word's first letter across the whole name (for the stagger)
-  offset: words.slice(0, wordIndex).join("").length,
-}));
+// Words with the index of their first letter across the whole name (for the stagger)
+const withLetterOffsets = (words) =>
+  words.map((word, wordIndex) => ({
+    word,
+    offset: words.slice(0, wordIndex).join("").length,
+  }));
 
 // Plays on every page load. Only skipped when the visitor opens a link
 // straight to another section (e.g. /#contact), so they land there directly.
@@ -26,21 +25,15 @@ export function shouldPlayIntro() {
   return !hash || hash === "#home";
 }
 
-const formatTimecode = (elapsedMs) => {
-  const totalFrames = Math.floor((elapsedMs / 1000) * FPS);
-  const frames = totalFrames % FPS;
-  const seconds = Math.floor(totalFrames / FPS) % 60;
-  const minutes = Math.floor(totalFrames / (FPS * 60)) % 60;
-  const pad = (value) => String(value).padStart(2, "0");
-  return `00:${pad(minutes)}:${pad(seconds)}:${pad(frames)}`;
-};
-
 const HeroIntro = ({ onReveal }) => {
-  const [count, setCount] = useState(3);
-  const [phase, setPhase] = useState("countdown"); // countdown | brand | leaving
+  const content = useSiteContent("intro");
+  const brandWords = withLetterOffsets(
+    content.brandWords.map((word) => word.trim()).filter(Boolean)
+  );
+  const slogan = content.slogan.map((word) => word.trim()).filter(Boolean);
+  const [phase, setPhase] = useState("lens"); // lens | brand | leaving
   const [removed, setRemoved] = useState(false);
 
-  const timecodeRef = useRef(null);
   const timersRef = useRef([]);
   const leavingRef = useRef(false);
   const onRevealRef = useRef(onReveal);
@@ -69,33 +62,15 @@ const HeroIntro = ({ onReveal }) => {
     later(() => setRemoved(true), REMOVE_AFTER_LEAVE_MS);
   }, []);
 
-  // Countdown -> brand -> shutter opens
+  // Lens lands -> brand name -> lens opens onto the website
   useEffect(() => {
     leavingRef.current = false;
 
-    later(() => setCount(2), COUNT_STEP_MS);
-    later(() => setCount(1), COUNT_STEP_MS * 2);
     later(() => setPhase("brand"), BRAND_AT_MS);
     later(leave, LEAVE_AT_MS);
 
     return clearTimers;
   }, [leave]);
-
-  // Running REC timecode (updates the text directly, no re-render)
-  useEffect(() => {
-    let frame = 0;
-    const start = performance.now();
-
-    const tick = (now) => {
-      if (timecodeRef.current) {
-        timecodeRef.current.textContent = formatTimecode(now - start);
-      }
-      frame = requestAnimationFrame(tick);
-    };
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, []);
 
   // Lock page scroll while the intro covers the screen; Escape / Enter skips
   useEffect(() => {
@@ -123,77 +98,64 @@ const HeroIntro = ({ onReveal }) => {
       role="status"
       aria-label="Loading One More Take"
     >
-      <div className="omt-intro-half omt-intro-top" aria-hidden="true" />
-      <div className="omt-intro-half omt-intro-bottom" aria-hidden="true" />
-      <span className="omt-intro-flash" aria-hidden="true" />
+      {/* The dark screen is the shadow around this circle.
+          When it grows, the website appears through it like a lens opening. */}
+      <span className="omt-intro-iris" aria-hidden="true" />
 
       <div className="omt-intro-stage">
+        <span className="omt-intro-glow" aria-hidden="true" />
         <span className="omt-intro-noise" aria-hidden="true" />
 
-        {/* Viewfinder corners */}
-        <span className="omt-intro-corner omt-corner-tl" aria-hidden="true" />
-        <span className="omt-intro-corner omt-corner-tr" aria-hidden="true" />
-        <span className="omt-intro-corner omt-corner-bl" aria-hidden="true" />
-        <span className="omt-intro-corner omt-corner-br" aria-hidden="true" />
+        <div className="omt-intro-center">
+          <div className="omt-intro-lens" aria-hidden="true">
+            <span className="omt-intro-ripple" />
+            <span className="omt-intro-ripple omt-intro-ripple-two" />
+            <img src="/intro-lens.jpg" alt="" draggable={false} />
+            <span className="omt-intro-lens-shine" />
+          </div>
 
-        <div className="omt-intro-hud omt-hud-top" aria-hidden="true">
-          <span className="omt-intro-rec">
-            <i />
-            REC
-            <b ref={timecodeRef}>00:00:00:00</b>
-          </span>
-          <span>4K · 24FPS · ISO 800</span>
-        </div>
+          <div className="omt-intro-brand" aria-hidden="true">
+            <h2 className="omt-intro-title">
+              {brandWords.map(({ word, offset }, wordIndex) => (
+                <span
+                  className={`omt-intro-word ${
+                    wordIndex === brandWords.length - 1 && brandWords.length > 1 ? "is-red" : ""
+                  }`}
+                  key={`${word}-${wordIndex}`}
+                >
+                  {word.split("").map((letter, letterPosition) => {
+                    const index = offset + letterPosition;
 
-        {/* Film leader countdown */}
-        <div className="omt-intro-leader" aria-hidden="true">
-          <span className="omt-leader-sweep" />
-          <span className="omt-leader-ring omt-leader-ring-outer" />
-          <span className="omt-leader-ring omt-leader-ring-inner" />
-          <span className="omt-leader-cross omt-leader-cross-x" />
-          <span className="omt-leader-cross omt-leader-cross-y" />
-          <strong className="omt-leader-number" key={count}>
-            {count}
-          </strong>
-        </div>
-
-        {/* Brand reveal */}
-        <div className="omt-intro-brand" aria-hidden="true">
-          <p className="omt-intro-slate">SCENE 01 &nbsp;/&nbsp; TAKE 01</p>
-
-          <h2 className="omt-intro-title">
-            {BRAND_WORDS.map(({ word, offset }) => (
-              <span
-                className={`omt-intro-word ${word === "TAKE" ? "is-red" : ""}`}
-                key={word}
-              >
-                {word.split("").map((letter, letterPosition) => {
-                  const index = offset + letterPosition;
-
-                  return (
-                    <span className="omt-intro-letter-mask" key={`${word}-${index}`}>
-                      <span className="omt-intro-letter" style={{ "--i": index }}>
-                        {letter}
+                    return (
+                      <span className="omt-intro-letter-mask" key={`${word}-${index}`}>
+                        <span className="omt-intro-letter" style={{ "--i": index }}>
+                          {letter}
+                        </span>
                       </span>
-                    </span>
-                  );
-                })}
-              </span>
-            ))}
-          </h2>
+                    );
+                  })}
+                </span>
+              ))}
+            </h2>
 
-          <p className="omt-intro-tagline">We shoot. We edit. We create.</p>
+            {slogan.length > 0 && (
+              <p className="omt-intro-slogan">
+                {slogan.map((word, index) => (
+                  <React.Fragment key={`${word}-${index}`}>
+                    {index > 0 && <i />}
+                    {word}
+                  </React.Fragment>
+                ))}
+              </p>
+            )}
+
+            <span className="omt-intro-line" />
+          </div>
         </div>
 
-        <div className="omt-intro-hud omt-hud-bottom">
-          <span className="omt-intro-progress" aria-hidden="true">
-            <i />
-          </span>
-
-          <button type="button" className="omt-intro-skip" onClick={leave}>
-            SKIP INTRO <span aria-hidden="true">→</span>
-          </button>
-        </div>
+        <button type="button" className="omt-intro-skip" onClick={leave}>
+          SKIP INTRO <span aria-hidden="true">→</span>
+        </button>
       </div>
     </div>,
     document.body

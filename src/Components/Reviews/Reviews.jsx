@@ -2,9 +2,12 @@
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useSiteContent } from "../../content/useSiteContent";
+import { SectionTitle } from "../../content/ContentText";
 import "./Reviews.css";
 
 export default function Reviews() {
+  const content = useSiteContent("reviews");
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -54,21 +57,19 @@ export default function Reviews() {
         <div>
           <div className="section-label">
             <span />
-            CLIENT STORIES
+            {content.label}
           </div>
 
           <h2>
-            WHAT PEOPLE
-            <br />
-            <em>SAY ABOUT US.</em>
+            <SectionTitle
+              lines={content.titleLines}
+              accent={content.titleAccent}
+              accentNewLine={content.accentNewLine}
+            />
           </h2>
         </div>
 
-        <p>
-          The best part of the work is hearing
-          what the story meant to the people
-          we created it for.
-        </p>
+        <p>{content.intro}</p>
       </div>
 
       <div
@@ -93,7 +94,7 @@ export default function Reviews() {
 
         {!loading && !error && reviews.length === 0 && (
           <p className="reviews-empty">
-            Client reviews will appear here soon.
+            {content.emptyText}
           </p>
         )}
 

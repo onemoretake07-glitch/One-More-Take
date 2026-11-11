@@ -1,28 +1,21 @@
 import { useState } from "react";
+import { digitsOnly, useSiteContent } from "../../content/useSiteContent";
 import "./ShootingBooking.css";
 
-const OWNER_WHATSAPP = "917331132227"; // Replace with owner's WhatsApp number
-
-const slots = [
-  "09:00 AM",
-  "10:00 AM",
-  "11:00 AM",
-  "12:00 PM",
-  "01:00 PM",
-  "02:00 PM",
-  "03:00 PM",
-  "04:00 PM",
-  "05:00 PM",
-];
-
 export default function Booking() {
+  const content = useSiteContent("booking");
+  const shootTypes = content.shootTypes.filter(Boolean);
+  const slots = content.timeSlots.filter(Boolean);
+  const ownerWhatsapp = digitsOnly(content.whatsappNumber) || "917331132227";
+
   const [form, setForm] = useState({
     name: "",
     phone: "",
-    service: "Studio",
+    service: "",
     date: "",
     time: "",
   });
+  const selectedService = form.service || shootTypes[0] || "";
 
   const [message, setMessage] = useState("");
 
@@ -46,12 +39,12 @@ export default function Booking() {
       "",
       `Name: ${form.name}`,
       `Phone: ${form.phone}`,
-      `Shoot Type: ${form.service}`,
+      `Shoot Type: ${selectedService}`,
       `Date: ${form.date}`,
       `Time: ${form.time}`,
     ].join("\n");
 
-    const url = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(text)}`;
+    const url = `https://wa.me/${ownerWhatsapp}?text=${encodeURIComponent(text)}`;
 
     window.open(url, "_blank", "noopener,noreferrer");
     setMessage("WhatsApp opened. Send the message to notify the owner.");
@@ -60,12 +53,11 @@ export default function Booking() {
   return (
     <section  className="booking-section" id="booking">
       <div className="booking-container">
-        <span className="booking-tag">LET'S CREATE SOMETHING AMAZING</span>
-        <h2>Book Your <span>Shoot</span></h2>
-        <p className="booking-description">
-          Choose your shoot type, select a date and time, and send your booking
-          request to One More Take.
-        </p>
+        <span className="booking-tag">{content.tag}</span>
+        <h2>
+          {content.titleStart} <span>{content.titleAccent}</span>
+        </h2>
+        <p className="booking-description">{content.description}</p>
 
         <form className="booking-form" onSubmit={handleSubmit}>
           <div className="booking-field">
@@ -100,11 +92,14 @@ export default function Booking() {
             <select
               id="booking-service"
               name="service"
-              value={form.service}
+              value={selectedService}
               onChange={handleChange}
             >
-              <option value="Studio">Studio Shoot</option>
-              <option value="Outdoor">Outdoor Shoot</option>
+              {shootTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
             </select>
           </div>
 
@@ -140,7 +135,7 @@ export default function Booking() {
           </div>
 
           <button className="booking-submit" type="submit">
-            Send Booking Request via WhatsApp
+            {content.buttonText}
           </button>
 
           {message && (

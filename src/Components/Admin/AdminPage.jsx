@@ -14,6 +14,10 @@ import {
 import ReviewsManager from "./ReviewsManager";
 import { auth, db } from "../../firebase";
 import ImageManager from "./ImageManager";
+import ContentEditor from "./ContentEditor";
+import { CONTENT_SECTIONS } from "../../content/contentSchema";
+import { useSiteContent } from "../../content/useSiteContent";
+import { FESTIVAL_STATUS_TEXT, getFestivalStatus } from "../../content/festival";
 import "./AdminPage.css";
 
 const ADMIN_UID = "J4ZRLCrni5RlsXI6xjByXRBWb8M2";
@@ -28,6 +32,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
+  const festival = useSiteContent("festival");
 
   // Keep the admin page out of Google search results
   useEffect(() => {
@@ -216,10 +221,12 @@ export default function AdminPage() {
 
   const navigation = [
     { id: "dashboard", label: "Dashboard", icon: "⌂" },
+    { id: "festival", label: "Festival Section", icon: "✨" },
+    { id: "content", label: "Website Content", icon: "✎" },
     { id: "hero", label: "Hero Image", icon: "▧" },
     { id: "gallery", label: "Gallery Images", icon: "▦" },
-    { id: "featured", label: "Featured Works", icon: "▶" },
-    { id: "quotations", label: "Quotations", icon: "☷" },{ id: "reviews", label: "Reviews", icon: "💬" },
+    { id: "reviews", label: "Reviews", icon: "💬" },
+    { id: "quotations", label: "Quotations", icon: "☷" },
   ];
 
   return (
@@ -271,8 +278,8 @@ export default function AdminPage() {
             <p className="admin-eyebrow">WEBSITE CONTROL CENTRE</p>
             <h2>Welcome back!</h2>
             <p>
-              Manage your Hero image, Gallery, Featured Works and client
-              quotations from one place.
+              Change every section of your website, run festival offers, and
+              manage images, reviews and client quotations from one place.
             </p>
           </section>
 
@@ -307,11 +314,31 @@ export default function AdminPage() {
             <div className="admin-panel-heading">
               <div>
                 <p className="admin-eyebrow">QUICK ACTIONS</p>
-                <h2>Manage website images</h2>
+                <h2>Manage your website</h2>
               </div>
             </div>
 
             <div className="admin-quick-grid">
+              <button
+                className="admin-quick-card"
+                onClick={() => setActiveSection("festival")}
+              >
+                <span>✨</span>
+                <strong>Festival Section</strong>
+                <small>
+                  {FESTIVAL_STATUS_TEXT[getFestivalStatus(festival)]}
+                </small>
+              </button>
+
+              <button
+                className="admin-quick-card"
+                onClick={() => setActiveSection("content")}
+              >
+                <span>✎</span>
+                <strong>Website Content</strong>
+                <small>Edit text, prices, contact and more</small>
+              </button>
+
               <button
                 className="admin-quick-card"
                 onClick={() => setActiveSection("hero")}
@@ -330,14 +357,6 @@ export default function AdminPage() {
                 <small>Add or remove Gallery images</small>
               </button>
 
-              <button
-                className="admin-quick-card"
-                onClick={() => setActiveSection("featured")}
-              >
-                <span>▶</span>
-                <strong>Featured Works</strong>
-                <small>Manage project thumbnails</small>
-              </button>
             </div>
           </section>
         </>
@@ -361,14 +380,17 @@ export default function AdminPage() {
         />
       )}
 
-      {activeSection === "featured" && (
-        <ImageManager
-          sectionId="featuredWorks"
-          title="Featured Works"
-          description="Manage the images used for your featured portfolio projects."
-          mode="multiple"
+      {activeSection === "festival" && <ContentEditor sectionKeys={["festival"]} />}
+
+      {activeSection === "content" && (
+        <ContentEditor
+          sectionKeys={CONTENT_SECTIONS.filter((item) => item.key !== "festival").map(
+            (item) => item.key
+          )}
         />
-      )}{activeSection === "reviews" && <ReviewsManager />}
+      )}
+
+      {activeSection === "reviews" && <ReviewsManager />}
 
       {activeSection === "quotations" && (
         <section className="admin-panel-card">

@@ -1,8 +1,16 @@
-
 import React from "react";
+import { safeLink, useSiteContent } from "../../content/useSiteContent";
 import "./Footer.css";
 
+const SOCIALS = [
+  { key: "instagram", label: "Instagram", short: "IG" },
+  { key: "youtube", label: "YouTube", short: "YT" },
+  { key: "linkedin", label: "LinkedIn", short: "IN" },
+];
+
 export default function Footer() {
+  const content = useSiteContent("footer");
+
   const scrollTo = (id) => {
     document.getElementById(id)?.scrollIntoView({
       behavior: "smooth",
@@ -19,7 +27,7 @@ export default function Footer() {
         <span className="logo-mark">
           <i />
         </span>
-        <span>ONE MORE TAKE</span>
+        <span>{content.brandName}</span>
       </button>
 
       <nav className="footer-nav" aria-label="Footer navigation">
@@ -37,36 +45,26 @@ export default function Footer() {
       </nav>
 
       <div className="footer-social">
-        <a
-          href="https://www.instagram.com/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="Instagram"
-        >
-          IG
-        </a>
+        {SOCIALS.map((social) => {
+          const link = safeLink(content[social.key], "");
+          if (!link) return null;
 
-        <a
-          href="https://www.youtube.com/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="YouTube"
-        >
-          YT
-        </a>
-
-        <a
-          href="https://www.linkedin.com/"
-          target="_blank"
-          rel="noreferrer"
-          aria-label="LinkedIn"
-        >
-          IN
-        </a>
+          return (
+            <a
+              key={social.key}
+              href={link}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={social.label}
+            >
+              {social.short}
+            </a>
+          );
+        })}
       </div>
 
       <p className="footer-copyright">
-        © {new Date().getFullYear()} One More Take. All rights reserved.
+        © {new Date().getFullYear()} {content.copyrightName}. All rights reserved.
       </p>
     </footer>
   );

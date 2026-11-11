@@ -273,7 +273,24 @@ function HomePage() {
 
     elements.forEach((element) => observer.observe(element));
 
-    return () => observer.disconnect();
+    // Content from the admin panel can add new cards later (e.g. a new
+    // service or plan) - start watching those too so they don't stay hidden.
+    const watched = new WeakSet(elements);
+    const mutationObserver = new MutationObserver(() => {
+      document.querySelectorAll(".reveal").forEach((element) => {
+        if (!watched.has(element)) {
+          watched.add(element);
+          observer.observe(element);
+        }
+      });
+    });
+
+    mutationObserver.observe(document.body, { childList: true, subtree: true });
+
+    return () => {
+      observer.disconnect();
+      mutationObserver.disconnect();
+    };
 
   }, []);
 
@@ -530,14 +547,6 @@ function HomePage() {
   return (
 
     <div className={`site ${loaded ? "site-loaded" : "site-loading"}`}>
-
-      {/* Page load animation */}
-
-      <div className="load-curtain" aria-hidden="true">
-
-        <span />
-
-      </div>
 
       {/* Custom cursor */}
 

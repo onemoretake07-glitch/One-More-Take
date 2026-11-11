@@ -4634,39 +4634,7 @@ img:not(.real-camera) {
    / PAGE-LOAD CURTAIN / AMBIENT PARTICLES
 ========================================================= */
 
-/* ---------- page-load curtain ---------- */
-
-.load-curtain {
-  position: fixed;
-  inset: 0;
-  z-index: 999999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #070707;
-  pointer-events: none;
-  transition:
-    transform .9s var(--motion-smooth) .15s,
-    visibility .9s;
-}
-
-.load-curtain span {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 3px solid var(--red);
-  border-top-color: transparent;
-  animation: curtainSpin .8s linear infinite;
-}
-
-@keyframes curtainSpin {
-  to { transform: rotate(360deg); }
-}
-
-.site-loaded .load-curtain {
-  transform: translateY(-100%);
-  visibility: hidden;
-}
+/* Page-load spinner curtain removed: the lens intro (HeroIntro) is the opening now */
 
 .site-loading {
   overflow: hidden;
@@ -4859,7 +4827,6 @@ img:not(.real-camera) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .load-curtain,
   .cursor-dot,
   .cursor-ring,
   .ambient-particles i {

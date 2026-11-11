@@ -20,6 +20,17 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <meta name="theme-color" content="#ed111b" />
 
+    <!-- Opening animation lens: load it early -->
+    <link rel="preload" as="image" href="/intro-lens.jpg" />
+
+    <!-- Dark screen while the site loads, so there is no white flash before the
+         lens intro. :where() has zero priority, so App.css still sets the page colour. -->
+    <style>
+      :where(body) {
+        background: #0c0c0c;
+      }
+    </style>
+
     <!-- Open Graph (WhatsApp, Facebook, Instagram, LinkedIn previews) -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="One More Take" />

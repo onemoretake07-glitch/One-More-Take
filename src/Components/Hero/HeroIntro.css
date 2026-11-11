@@ -1,12 +1,14 @@
 /* =========================================
    ONE MORE TAKE — OPENING INTRO
-   Film leader countdown -> brand -> shutter opens
+   Lens spins in -> brand name -> lens opens onto the website
 ========================================= */
 
 .omt-intro {
   --omt-intro-red: #ed111b;
+  --omt-intro-dark: #0c0c0c;
   --omt-intro-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --omt-intro-shutter: cubic-bezier(0.76, 0, 0.24, 1);
+  --omt-intro-open: cubic-bezier(0.76, 0, 0.24, 1);
+  --omt-intro-lens: 170px;
 
   position: fixed;
   inset: 0;
@@ -14,7 +16,6 @@
   overflow: hidden;
   color: #ffffff;
   font-family: "Space Grotesk", "DM Sans", sans-serif;
-  pointer-events: auto;
 }
 
 .omt-intro *,
@@ -23,85 +24,63 @@
   box-sizing: border-box;
 }
 
-/* SHUTTER HALVES */
-.omt-intro-half {
-  position: absolute;
-  left: 0;
-  width: 100%;
-  height: 50.5%;
-  background: #0c0c0c;
-  transition: transform 1s var(--omt-intro-shutter) 0.15s;
-}
-
-.omt-intro-top {
-  top: 0;
-  background:
-    radial-gradient(ellipse at 50% 100%, rgba(237, 17, 27, 0.16), transparent 60%),
-    #0c0c0c;
-}
-
-.omt-intro-bottom {
-  bottom: 0;
-  background:
-    radial-gradient(ellipse at 50% 0%, rgba(237, 17, 27, 0.16), transparent 60%),
-    #0c0c0c;
-}
-
-.omt-intro.is-leaving .omt-intro-top {
-  transform: translateY(-100%);
-}
-
-.omt-intro.is-leaving .omt-intro-bottom {
-  transform: translateY(100%);
-}
-
 .omt-intro.is-leaving {
   pointer-events: none;
 }
 
-/* Red light line when the shutter opens */
-.omt-intro-flash {
+/* IRIS: a growing transparent circle; its huge shadow is the dark screen */
+.omt-intro-iris {
   position: absolute;
   top: 50%;
-  left: 0;
-  z-index: 3;
-  width: 100%;
-  height: 2px;
-  margin-top: -1px;
-  background: var(--omt-intro-red);
+  left: 50%;
+  width: 0;
+  height: 0;
+  border: 2px solid transparent;
+  border-radius: 50%;
   box-shadow:
-    0 0 18px 2px rgba(237, 17, 27, 0.8),
-    0 0 60px 8px rgba(237, 17, 27, 0.35);
-  opacity: 0;
-  transform: scaleX(0);
-  pointer-events: none;
+    0 0 34px 8px rgba(237, 17, 27, 0),
+    0 0 0 200vmax var(--omt-intro-dark);
+  transform: translate(-50%, -50%);
 }
 
-.omt-intro.is-leaving .omt-intro-flash {
-  animation: omtIntroFlash 0.9s var(--omt-intro-ease) forwards;
+.omt-intro.is-leaving .omt-intro-iris {
+  width: 320vmax;
+  height: 320vmax;
+  border-color: rgba(237, 17, 27, 0.85);
+  box-shadow:
+    0 0 34px 8px rgba(237, 17, 27, 0.55),
+    0 0 0 200vmax var(--omt-intro-dark);
+  transition:
+    width 1.15s var(--omt-intro-open) 0.15s,
+    height 1.15s var(--omt-intro-open) 0.15s,
+    border-color 0.2s ease 0.15s,
+    box-shadow 0.2s ease 0.15s;
 }
 
-/* STAGE (everything on top of the shutter) */
+/* STAGE */
 .omt-intro-stage {
   position: absolute;
   inset: 0;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  transition:
-    opacity 0.3s ease,
-    transform 0.5s var(--omt-intro-ease);
+  z-index: 1;
 }
 
-.omt-intro.is-leaving .omt-intro-stage {
-  opacity: 0;
-  transform: scale(1.06);
+.omt-intro-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(900px, 140vw);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(237, 17, 27, 0.22), transparent 62%);
+  transform: translate(-50%, -50%);
+  animation: omtIntroGlow 2.4s ease-in-out infinite alternate;
+  transition: opacity 0.4s ease;
 }
 
 .omt-intro-noise {
   position: absolute;
   inset: -50%;
-  opacity: 0.06;
+  opacity: 0.05;
   background-image:
     repeating-radial-gradient(circle at 17% 32%, #fff 0 1px, transparent 1px 3px),
     repeating-radial-gradient(circle at 73% 61%, #fff 0 1px, transparent 1px 4px);
@@ -109,235 +88,111 @@
   pointer-events: none;
 }
 
-/* VIEWFINDER CORNERS */
-.omt-intro-corner {
-  position: absolute;
-  width: 34px;
-  height: 34px;
-  border: 0 solid rgba(255, 255, 255, 0.55);
-  animation: omtIntroCorner 0.8s var(--omt-intro-ease) both;
+.omt-intro.is-leaving .omt-intro-glow,
+.omt-intro.is-leaving .omt-intro-noise {
+  opacity: 0;
 }
 
-.omt-corner-tl {
-  top: 28px;
-  left: 28px;
-  border-top-width: 2px;
-  border-left-width: 2px;
-}
-
-.omt-corner-tr {
-  top: 28px;
-  right: 28px;
-  border-top-width: 2px;
-  border-right-width: 2px;
-}
-
-.omt-corner-bl {
-  bottom: 28px;
-  left: 28px;
-  border-bottom-width: 2px;
-  border-left-width: 2px;
-}
-
-.omt-corner-br {
-  right: 28px;
-  bottom: 28px;
-  border-right-width: 2px;
-  border-bottom-width: 2px;
-}
-
-/* HUD */
-.omt-intro-hud {
-  position: absolute;
-  left: 76px;
-  right: 76px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  color: rgba(255, 255, 255, 0.6);
-  font-family: "DM Sans", sans-serif;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 2px;
-  animation: omtIntroFade 0.6s ease 0.2s both;
-}
-
-.omt-hud-top {
-  top: 36px;
-}
-
-.omt-hud-bottom {
-  bottom: 34px;
-}
-
-.omt-intro-rec {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #ffffff;
-}
-
-.omt-intro-rec i {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--omt-intro-red);
-  box-shadow: 0 0 10px var(--omt-intro-red);
-  animation: omtIntroBlink 1s steps(2, start) infinite;
-}
-
-.omt-intro-rec b {
-  margin-left: 6px;
-  color: rgba(255, 255, 255, 0.75);
-  font-weight: 600;
-  font-variant-numeric: tabular-nums;
-}
-
-.omt-intro-progress {
-  position: relative;
-  flex: 1;
-  max-width: 260px;
-  height: 2px;
-  overflow: hidden;
-  background: rgba(255, 255, 255, 0.15);
-}
-
-.omt-intro-progress i {
+.omt-intro-center {
   position: absolute;
   inset: 0;
-  background: var(--omt-intro-red);
-  transform-origin: left center;
-  animation: omtIntroProgress 2.95s cubic-bezier(0.45, 0.05, 0.25, 1) both;
 }
 
-.omt-intro-skip {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(255, 255, 255, 0.8);
-  font: inherit;
-  letter-spacing: 2px;
-  cursor: pointer;
-  transition:
-    border-color 0.3s ease,
-    color 0.3s ease,
-    background-color 0.3s ease;
-}
-
-.omt-intro-skip span {
-  transition: transform 0.3s var(--omt-intro-ease);
-}
-
-.omt-intro-skip:hover {
-  border-color: var(--omt-intro-red);
-  background: rgba(237, 17, 27, 0.15);
-  color: #ffffff;
-}
-
-.omt-intro-skip:hover span {
-  transform: translateX(4px);
-}
-
-.omt-intro-skip:focus-visible {
-  outline: 2px solid var(--omt-intro-red);
-  outline-offset: 3px;
-}
-
-/* FILM LEADER COUNTDOWN */
-.omt-intro-leader {
+/* LENS */
+.omt-intro-lens {
   position: absolute;
   top: 50%;
   left: 50%;
-  display: grid;
-  place-items: center;
-  width: min(300px, 62vw);
-  aspect-ratio: 1;
+  width: var(--omt-intro-lens);
+  height: var(--omt-intro-lens);
   transform: translate(-50%, -50%);
   transition:
-    opacity 0.45s ease,
-    transform 0.6s var(--omt-intro-ease);
+    transform 0.9s var(--omt-intro-ease),
+    opacity 0.6s ease;
 }
 
-.omt-intro.is-brand .omt-intro-leader,
-.omt-intro.is-leaving .omt-intro-leader {
+.omt-intro.is-brand .omt-intro-lens {
+  transform: translate(-50%, calc(-50% - 95px)) scale(0.72);
+}
+
+/* Lens rushes towards the viewer as the website opens */
+.omt-intro.is-leaving .omt-intro-lens {
   opacity: 0;
-  transform: translate(-50%, -50%) scale(1.5);
+  transform: translate(-50%, calc(-50% - 95px)) scale(9);
+  transition:
+    transform 1.1s cubic-bezier(0.7, 0, 0.84, 0),
+    opacity 0.5s ease 0.35s;
 }
 
-.omt-leader-sweep {
-  position: absolute;
-  inset: 8%;
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    rgba(237, 17, 27, 0.55),
-    rgba(237, 17, 27, 0.05) 70%,
-    transparent 100%
-  );
-  animation: omtIntroSweep 0.55s linear infinite;
-}
-
-.omt-leader-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 2px solid rgba(255, 255, 255, 0.85);
-}
-
-.omt-leader-ring-outer {
-  inset: 0;
-}
-
-.omt-leader-ring-inner {
-  inset: 14%;
-  border-width: 1px;
-  border-color: rgba(255, 255, 255, 0.45);
-}
-
-.omt-leader-cross {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.35);
-}
-
-.omt-leader-cross-x {
-  left: -12%;
-  right: -12%;
-  top: 50%;
-  height: 1px;
-}
-
-.omt-leader-cross-y {
-  top: -12%;
-  bottom: -12%;
-  left: 50%;
-  width: 1px;
-}
-
-.omt-leader-number {
+.omt-intro-lens img {
   position: relative;
   z-index: 1;
-  font-size: clamp(90px, 18vw, 150px);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -4px;
-  text-shadow: 0 0 30px rgba(237, 17, 27, 0.6);
-  animation: omtIntroNumber 0.55s var(--omt-intro-ease) both;
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.08),
+    0 0 60px rgba(237, 17, 27, 0.45);
+  animation: omtIntroLensIn 1.1s var(--omt-intro-ease) both;
+}
+
+/* Light sweeping across the glass */
+.omt-intro-lens-shine {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.omt-intro-lens-shine::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  background: linear-gradient(
+    115deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.45) 50%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  animation: omtIntroShine 1.1s ease-in-out 0.9s both;
+}
+
+/* Red rings pulsing out of the lens */
+.omt-intro-ripple {
+  position: absolute;
+  inset: 0;
+  border: 2px solid rgba(237, 17, 27, 0.7);
+  border-radius: 50%;
+  opacity: 0;
+  animation: omtIntroRipple 1.8s ease-out 0.6s infinite;
+}
+
+.omt-intro-ripple-two {
+  animation-delay: 1.5s;
 }
 
 /* BRAND */
 .omt-intro-brand {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   padding: 0 20px;
   text-align: center;
+  transform: translateY(-4px);
   visibility: hidden;
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s var(--omt-intro-ease);
 }
 
 .omt-intro.is-brand .omt-intro-brand,
@@ -345,40 +200,18 @@
   visibility: visible;
 }
 
-.omt-intro-slate,
-.omt-intro-tagline {
-  margin: 0;
-  font-family: "DM Sans", sans-serif;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 4px;
+.omt-intro.is-leaving .omt-intro-brand {
   opacity: 0;
-}
-
-.omt-intro-slate {
-  color: var(--omt-intro-red);
-}
-
-.omt-intro-tagline {
-  color: rgba(255, 255, 255, 0.65);
-  letter-spacing: 3px;
-}
-
-.omt-intro.is-brand .omt-intro-slate {
-  animation: omtIntroFadeUp 0.6s var(--omt-intro-ease) 0.05s both;
-}
-
-.omt-intro.is-brand .omt-intro-tagline {
-  animation: omtIntroTagline 0.9s var(--omt-intro-ease) 0.6s both;
+  transform: translateY(-24px);
 }
 
 .omt-intro-title {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0 0.28em;
+  gap: 0 0.26em;
   margin: 0;
-  font-size: clamp(44px, 9vw, 120px);
+  font-size: clamp(40px, 7.5vw, 96px);
   font-weight: 800;
   line-height: 1;
   letter-spacing: -0.04em;
@@ -408,23 +241,116 @@
 .omt-intro.is-brand .omt-intro-letter,
 .omt-intro.is-leaving .omt-intro-letter {
   animation: omtIntroLetter 0.75s var(--omt-intro-ease) both;
-  animation-delay: calc(var(--i) * 0.04s);
+  animation-delay: calc(var(--i) * 0.045s);
+}
+
+.omt-intro-slogan {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 5px;
+  opacity: 0;
+}
+
+.omt-intro-slogan i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--omt-intro-red);
+  box-shadow: 0 0 8px var(--omt-intro-red);
+}
+
+.omt-intro.is-brand .omt-intro-slogan {
+  animation: omtIntroSlogan 0.9s var(--omt-intro-ease) 0.55s both;
+}
+
+.omt-intro-line {
+  display: block;
+  width: min(260px, 60vw);
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--omt-intro-red), transparent);
+  transform: scaleX(0);
+}
+
+.omt-intro.is-brand .omt-intro-line {
+  animation: omtIntroLine 1.2s var(--omt-intro-ease) 0.7s both;
+}
+
+/* SKIP */
+.omt-intro-skip {
+  position: absolute;
+  right: 28px;
+  bottom: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.8);
+  font-family: "DM Sans", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  cursor: pointer;
+  animation: omtIntroFade 0.6s ease 0.4s both;
+  transition:
+    border-color 0.3s ease,
+    color 0.3s ease,
+    background-color 0.3s ease,
+    opacity 0.3s ease;
+}
+
+.omt-intro-skip span {
+  transition: transform 0.3s var(--omt-intro-ease);
+}
+
+.omt-intro-skip:hover {
+  border-color: var(--omt-intro-red);
+  background: rgba(237, 17, 27, 0.15);
+  color: #ffffff;
+}
+
+.omt-intro-skip:hover span {
+  transform: translateX(4px);
+}
+
+.omt-intro-skip:focus-visible {
+  outline: 2px solid var(--omt-intro-red);
+  outline-offset: 3px;
+}
+
+.omt-intro.is-leaving .omt-intro-skip {
+  opacity: 0;
 }
 
 /* KEYFRAMES */
-@keyframes omtIntroFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+@keyframes omtIntroLensIn {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-160deg);
+    filter: blur(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0);
+    filter: blur(0);
+  }
 }
 
-@keyframes omtIntroFadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes omtIntroShine {
+  to { transform: translateX(120%); }
 }
 
-@keyframes omtIntroTagline {
-  from { opacity: 0; letter-spacing: 8px; }
-  to { opacity: 1; letter-spacing: 3px; }
+@keyframes omtIntroRipple {
+  0% { opacity: 0.8; transform: scale(1); }
+  100% { opacity: 0; transform: scale(2.3); }
 }
 
 @keyframes omtIntroLetter {
@@ -432,29 +358,24 @@
   to { transform: translateY(0) rotate(0); }
 }
 
-@keyframes omtIntroNumber {
-  0% { opacity: 0; transform: scale(1.6); filter: blur(8px); }
-  35% { opacity: 1; transform: scale(1); filter: blur(0); }
-  85% { opacity: 1; }
-  100% { opacity: 0.2; transform: scale(0.92); }
+@keyframes omtIntroSlogan {
+  from { opacity: 0; letter-spacing: 12px; }
+  to { opacity: 1; letter-spacing: 5px; }
 }
 
-@keyframes omtIntroSweep {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes omtIntroCorner {
-  from { opacity: 0; transform: scale(1.8); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes omtIntroBlink {
-  to { visibility: hidden; }
-}
-
-@keyframes omtIntroProgress {
+@keyframes omtIntroLine {
   from { transform: scaleX(0); }
   to { transform: scaleX(1); }
+}
+
+@keyframes omtIntroFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes omtIntroGlow {
+  from { opacity: 0.7; }
+  to { opacity: 1; }
 }
 
 @keyframes omtIntroGrain {
@@ -465,64 +386,30 @@
   100% { transform: translate(0, 0); }
 }
 
-@keyframes omtIntroFlash {
-  0% { opacity: 0; transform: scaleX(0); }
-  25% { opacity: 1; transform: scaleX(1); }
-  100% { opacity: 0; transform: scaleX(1) scaleY(6); }
-}
-
 /* MOBILE */
 @media (max-width: 600px) {
-  .omt-intro-corner {
-    width: 24px;
-    height: 24px;
+  .omt-intro {
+    --omt-intro-lens: 128px;
   }
 
-  .omt-corner-tl,
-  .omt-corner-tr {
-    top: 18px;
+  .omt-intro.is-brand .omt-intro-lens {
+    transform: translate(-50%, calc(-50% - 72px)) scale(0.72);
   }
 
-  .omt-corner-bl,
-  .omt-corner-br {
-    bottom: 18px;
+  .omt-intro.is-leaving .omt-intro-lens {
+    transform: translate(-50%, calc(-50% - 72px)) scale(9);
   }
 
-  .omt-corner-tl,
-  .omt-corner-bl {
-    left: 18px;
-  }
-
-  .omt-corner-tr,
-  .omt-corner-br {
-    right: 18px;
-  }
-
-  .omt-intro-hud {
-    left: 52px;
-    right: 52px;
-    font-size: 8px;
-    letter-spacing: 1.5px;
-  }
-
-  .omt-hud-top > span:last-child {
-    display: none;
-  }
-
-  .omt-hud-top {
-    top: 25px;
-  }
-
-  .omt-hud-bottom {
-    bottom: 22px;
+  .omt-intro-slogan {
+    gap: 10px;
+    font-size: 10px;
+    letter-spacing: 3px;
   }
 
   .omt-intro-skip {
+    right: 18px;
+    bottom: 20px;
     padding: 8px 12px;
-  }
-
-  .omt-intro-slate,
-  .omt-intro-tagline {
     font-size: 9px;
   }
 }

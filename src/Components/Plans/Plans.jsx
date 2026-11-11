@@ -1,217 +1,17 @@
 import React, { useEffect, useState } from "react";
+import { useSiteContent } from "../../content/useSiteContent";
+import { SectionTitle } from "../../content/ContentText";
 import "./Plans.css";
-
-const plans = [
-  {
-    number: "01",
-    name: "SILVER",
-    title: "Content Starter",
-    description:
-      "Start creating professional and consistent content for your brand.",
-    
-    price: 9999,
-    Reels : "8 Reels  2  Ads",
-    
-    icon: "◉",
-    tags: ["Planning", "Shoot", "Reels"],
-    includes: [
-      {
-        title: "Content Strategy",
-        items: [
-          "Initial content planning",
-          "Topic recommendations",
-          "Content calendar",
-          
-        ],
-      },
-      {
-        title: "Production",
-        items: ["Professional video shoot", "Professional photography","Reels : 8 Reels  2  Ads"],
-      },
-      {
-        title: "Content Creation",
-        items: [
-          "Edited Reels",
-          "Branded visual content",
-          "Captions / content support",
-        ],
-      },
-      {
-        title: "Content Support",
-        items: ["Content organization", "Publishing-ready assets"],
-      },
-    ],
-    outcome: "A professional foundation for your digital presence.",
-  },
-  {
-    number: "02",
-    name: "GOLD",
-    title: "Authority Builder",
-    description:
-      "Build a recognizable personal brand through consistent strategic content.",
-    oldPrice: 24999,
-    price: 17499,
-    Reels : "15 Reels  3  Ads",
-    discount: "30% OFF ON First Shoot",
-    icon: "✦",
-    tags: ["Strategy", "Content", "Brand"],
-    popular: true,
-    includes: [
-      {
-        title: "Strategy",
-        items: [
-          "Personal brand positioning",
-          "Content pillars",
-          "Monthly content strategy",
-          "Topic & hook development",
-        ],
-      },
-      {
-        title: "Production",
-        items: [
-          "Regular professional shoots",
-          "Professional photography",
-          "Multiple content formats","Reels : 15 Reels  3  Ads"
-        ],
-      },
-      {
-        title: "Content Creation",
-        items: [
-          "Higher-volume Reels",
-          "Educational videos",
-          "FAQ content",
-          "Authority content",
-          "Personal brand content",
-          "Clinic / brand content",
-        ],
-      },
-      {
-        title: "Content Management",
-        items: [
-          "Content calendar",
-          "Publishing support",
-          "Profile / content optimization",
-          "Monthly content review",
-        ],
-      },
-    ],
-    outcome: "Become more visible for what you already know.",
-  },
-  {
-    number: "03",
-    name: "PLATINUM",
-    title: "Digital Authority System",
-    description:
-      "Build a complete long-term content and personal brand ecosystem.",
-    oldPrice: 49999,
-    price: 34999,
-    Reels : "30 Reels  6  Ads",
-    discount: "30% OFF ON First Shoot",
-    icon: "◎",
-    tags: ["30-Day Plan", "Long-form", "Growth"],
-    includes: [
-      {
-        title: "Strategic Brand Development",
-        items: [
-          "Personal brand strategy",
-          "Professional positioning",
-          "Audience definition",
-          "Content architecture",
-          "30-day content roadmap",
-        ],
-      },
-      {
-        title: "Premium Production",
-        items: [
-          "Structured shoot days",
-          "Multiple video formats",
-          "Professional photography",
-          "Educational content",
-          "Authority content",
-          "Story-driven content",
-          "Promotional content",
-          "Long-form content","Reels : 30 Reels  10  Ads"
-        ],
-      },
-      {
-        title: "Content Operations",
-        items: [
-          "Content calendar",
-          "Publishing workflow",
-          "Content library",
-          "Performance review",
-          "Content optimization",
-        ],
-      },
-    ],
-    outcome:
-      "A digital presence designed as a long-term professional asset.",
-  },
-  {
-    number: "04",
-    name: "DIAMOND",
-    title: "Complete Brand Partner",
-    description:
-      "One team managing your complete strategy, production and content journey.",
-    oldPrice: 129999,
-    price: 99999,
-    Reels : "30 Reels  10  Ads",
-    discount: "Digital Marketing Service",
-    icon: "◆",
-    tags: ["Strategy", "Production", "Management"],
-    includes: [
-      {
-        title: "Strategy",
-        items: [
-          "Brand positioning",
-          "Content strategy",
-          "30-day planning",
-          "Campaign concepts",
-          "Content architecture",
-        ],
-      },
-      {
-        title: "Production",
-        items: [
-          "Regular professional shoots",
-          "Photography",
-          "Educational videos",
-          "Brand films",
-          "Promotional videos",
-          "Long-form content","Reels : 30 Reels  10  Ads", "Digital Marketing Service"
-        ],
-      },
-      {
-        title: "Content",
-        items: [
-          "Reels",
-          "Short-form videos",
-          "Educational series",
-          "Authority series",
-          "FAQ series",
-          "Storytelling",
-          "Clinic / hospital content",
-        ],
-      },
-      {
-        title: "Management",
-        items: [
-          "Content calendar",
-          "Publishing support",
-          "Content library",
-          "Monthly review",
-          "Creative optimization",
-        ],
-      },
-    ],
-    outcome: "One team for your complete content journey.",
-  },
-];
 
 const formatPrice = (value) =>
   `₹${Number(value).toLocaleString("en-IN")}`;
 
+// Old price is only shown when it is set and higher than the price
+const hasOldPrice = (plan) => Number(plan.oldPrice) > Number(plan.price);
+
 function Plans({ onGenerateQuotation }) {
+  const content = useSiteContent("plans");
+  const plans = content.items.filter((plan) => plan.name || plan.title);
   const [selectedPlan, setSelectedPlan] = useState(null);
 
   useEffect(() => {
@@ -260,22 +60,24 @@ function Plans({ onGenerateQuotation }) {
         <div className="plans-heading reveal">
           <div className="section-label light">
             <span />
-            OUR PLANS
+            {content.label}
           </div>
 
           <h2>
-            CHOOSE YOUR
-            <br />
-            <em>CONTENT LEVEL.</em>
+            <SectionTitle
+              lines={content.titleLines}
+              accent={content.titleAccent}
+              accentNewLine={content.accentNewLine}
+            />
           </h2>
 
-          <p>Start where you are. Upgrade as your brand grows.</p>
+          <p>{content.intro}</p>
         </div>
 
         <div className="plans-grid">
           {plans.map((plan, index) => (
             <article
-              key={plan.name}
+              key={index}
               className={`plan-card reveal delay-${index % 4} ${
                 plan.popular ? "plan-popular" : ""
               }`}
@@ -297,20 +99,20 @@ function Plans({ onGenerateQuotation }) {
 
               <div className="plan-price">
                 <div className="plan-price-top">
-                  <del>{formatPrice(plan.oldPrice)}</del>
-                  <span>{plan.Reels}</span>
-                  <span>{plan.discount}</span>
+                  {hasOldPrice(plan) && <del>{formatPrice(plan.oldPrice)}</del>}
+                  {plan.Reels && <span>{plan.Reels}</span>}
+                  {plan.discount && <span>{plan.discount}</span>}
                 </div>
 
                 <strong>
                   {formatPrice(plan.price)}
-                  <small>/ month</small>
+                  <small>{content.priceSuffix}</small>
                 </strong>
               </div>
 
               <div className="plan-tags">
-                {plan.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
+                {plan.tags.filter(Boolean).map((tag, tagIndex) => (
+                  <span key={tagIndex}>{tag}</span>
                 ))}
               </div>
 
@@ -332,8 +134,8 @@ function Plans({ onGenerateQuotation }) {
 
         <div className="plans-help reveal">
           <div>
-            <small>NOT SURE WHICH PLAN?</small>
-            <p>Open a plan to see exactly what's included.</p>
+            <small>{content.helpTitle}</small>
+            <p>{content.helpText}</p>
           </div>
 
           <span className="plans-help-arrow">→</span>
@@ -341,11 +143,9 @@ function Plans({ onGenerateQuotation }) {
 
         {/* Custom Quotation */}
         <div className="plans-custom-quotation reveal">
-          <p>HAVE A DIFFERENT REQUIREMENT?</p>
+          <p>{content.customTitle}</p>
 
-          <span>
-            Create a quotation tailored to your specific project.
-          </span>
+          <span>{content.customText}</span>
 
           <button
             type="button"
@@ -389,13 +189,13 @@ function Plans({ onGenerateQuotation }) {
 
             <div className="plan-modal-price">
               <div>
-                <del>{formatPrice(selectedPlan.oldPrice)}</del>
-                <span>{selectedPlan.discount}</span>
+                {hasOldPrice(selectedPlan) && <del>{formatPrice(selectedPlan.oldPrice)}</del>}
+                {selectedPlan.discount && <span>{selectedPlan.discount}</span>}
               </div>
 
               <strong>
                 {formatPrice(selectedPlan.price)}
-                <small>/ month</small>
+                <small>{content.priceSuffix}</small>
               </strong>
             </div>
 
@@ -405,13 +205,12 @@ function Plans({ onGenerateQuotation }) {
             </div>
 
             <div className="plan-includes-grid">
-              {selectedPlan.includes.map((section) => (
-                <div className="plan-include-group" key={section.title}>
+              {selectedPlan.includes.map((section, sectionIndex) => (
+                <div className="plan-include-group" key={sectionIndex}>
                   <h3>{section.title}</h3>
-<h3>{plans.Reels}</h3>
                   <ul>
-                    {section.items.map((item) => (
-                      <li key={item}>
+                    {section.items.filter(Boolean).map((item, itemIndex) => (
+                      <li key={itemIndex}>
                         <span>✓</span>
                         {item}
                       </li>

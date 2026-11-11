@@ -1,16 +1,45 @@
-
 import React from "react";
+import { useSiteContent } from "../../content/useSiteContent";
+import { MultiLine, SectionTitle } from "../../content/ContentText";
 import "./Process.css";
 
-const steps = [
-  ["01", "PLAN", "Understand"],
-  ["02", "SHOOT", "Capture"],
-  ["03", "EDIT", "Bring it alive"],
-  ["04", "COLOR", "Set the mood"],
-  ["05", "DELIVER", "Make it perform"],
-];
+// The first 5 steps have their own small illustration
+function StepVisual({ index }) {
+  if (index === 0) {
+    return (
+      <div className="paper-lines">
+        <i />
+        <i />
+        <i />
+        <i />
+      </div>
+    );
+  }
+  if (index === 1) return <div className="mini-camera">◉</div>;
+  if (index === 2) {
+    return (
+      <div className="mini-edit">
+        <i />
+        <i />
+        <i />
+      </div>
+    );
+  }
+  if (index === 3) {
+    return (
+      <div className="color-wheels">
+        <i />
+        <i />
+        <i />
+      </div>
+    );
+  }
+  return <div className="deliver-icon">↗</div>;
+}
 
 export default function Process() {
+  const content = useSiteContent("process");
+
   return (
     <section className="process">
       <div className="process-bg" />
@@ -19,20 +48,19 @@ export default function Process() {
         <div className="process-intro reveal">
           <div className="section-label light">
             <span />
-            THE PROCESS
+            {content.label}
           </div>
 
           <h2>
-            FROM
-            <br />
-            FOOTAGE
-            <br />
-            TO <em>IMPACT.</em>
+            <SectionTitle
+              lines={content.titleLines}
+              accent={content.titleAccent}
+              accentNewLine={content.accentNewLine}
+            />
           </h2>
 
           <p>
-            Ideas go through many frames.
-            We make the final one unforgettable.
+            <MultiLine text={content.intro} />
           </p>
         </div>
 
@@ -41,52 +69,21 @@ export default function Process() {
             <span />
           </div>
 
-          {steps.map((step, index) => (
+          {content.steps.map((step, index) => (
             <div
-              className={`process-step reveal delay-${index}`}
-              key={step[0]}
+              className={`process-step reveal delay-${index % 5}`}
+              key={index}
             >
-              <small>{step[0]}</small>
+              <small>{String(index + 1).padStart(2, "0")}</small>
 
               <div className="process-card">
-                <div className={`process-visual pv-${index}`}>
-                  {index === 0 && (
-                    <div className="paper-lines">
-                      <i />
-                      <i />
-                      <i />
-                      <i />
-                    </div>
-                  )}
-
-                  {index === 1 && (
-                    <div className="mini-camera">◉</div>
-                  )}
-
-                  {index === 2 && (
-                    <div className="mini-edit">
-                      <i />
-                      <i />
-                      <i />
-                    </div>
-                  )}
-
-                  {index === 3 && (
-                    <div className="color-wheels">
-                      <i />
-                      <i />
-                      <i />
-                    </div>
-                  )}
-
-                  {index === 4 && (
-                    <div className="deliver-icon">↗</div>
-                  )}
+                <div className={`process-visual pv-${index % 5}`}>
+                  <StepVisual index={index} />
                 </div>
               </div>
 
-              <strong>{step[1]}</strong>
-              <span>{step[2]}</span>
+              <strong>{step.title}</strong>
+              <span>{step.text}</span>
             </div>
           ))}
         </div>

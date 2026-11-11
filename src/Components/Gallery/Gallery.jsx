@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
+import { useSiteContent } from "../../content/useSiteContent";
 import "./Gallery.css";
 
 export default function Gallery() {
+  const content = useSiteContent("gallery");
   const [galleryItems, setGalleryItems] = useState([]);
   const [active, setActive] = useState(0);
   const navigate = useNavigate();
@@ -61,16 +63,16 @@ export default function Gallery() {
   return (
     <section className="omt-gallery" id="gallery">
       <div className="omt-gallery-heading">
-        <span className="omt-gallery-eyebrow">BEHIND EVERY FRAME</span>
+        <span className="omt-gallery-eyebrow">{content.eyebrow}</span>
         <h2>
-          Our <span>Gallery.</span>
+          {content.titleStart} <span>{content.titleAccent}</span>
         </h2>
-        <p>A closer look at the stories we create.</p>
+        <p>{content.description}</p>
       </div>
 
       {galleryItems.length === 0 ? (
         <p className="omt-gallery-empty">
-          Gallery images will appear here soon.
+          {content.emptyText}
         </p>
       ) : (
         <>

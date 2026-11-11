@@ -1,60 +1,38 @@
-
 import React from "react";
+import { useSiteContent } from "../../content/useSiteContent";
+import { SectionTitle } from "../../content/ContentText";
 import "./Experience.css";
 
-const stats = [
-  {
-    number: "3+",
-    title: "Years",
-    description: "in the industry",
-  },
-  {
-    number: "100+",
-    title: "Projects",
-    description: "delivered",
-  },
-  {
-    number: "60+",
-    title: "Clients",
-    description: "worked with",
-  },
-  {
-    number: "5+",
-    title: "Industries",
-    description: "served",
-  },
-];
-
 export default function Experience() {
+  const content = useSiteContent("experience");
+
   return (
     <section id="experience" className="experience section">
       <div className="experience-heading reveal">
         <div className="section-label">
           <span />
-          OUR EXPERIENCE
+          {content.label}
         </div>
 
         <h2>
-          EXPERIENCE
-          <br />
-          THAT <em>SHOWS.</em>
+          <SectionTitle
+            lines={content.titleLines}
+            accent={content.titleAccent}
+            accentNewLine={content.accentNewLine}
+          />
         </h2>
 
-        <p>
-          Years of learning, creating and growing
-          with ambitious brands, professionals and
-          creators.
-        </p>
+        <p>{content.intro}</p>
       </div>
 
       <div className="experience-grid">
-        {stats.map((stat, index) => (
+        {content.stats.map((stat, index) => (
           <article
-            className={`experience-card reveal delay-${index}`}
-            key={stat.title}
+            className={`experience-card reveal delay-${index % 4}`}
+            key={index}
           >
             <span className="experience-index">
-              0{index + 1}
+              {String(index + 1).padStart(2, "0")}
             </span>
 
             <strong>{stat.number}</strong>

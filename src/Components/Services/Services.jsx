@@ -1,53 +1,13 @@
 
 import React from "react";
+import { useSiteContent } from "../../content/useSiteContent";
+import { SectionTitle } from "../../content/ContentText";
 import "./Services.css";
 
-const services = [
-  {
-    number: "01",
-    title: "AI Video Generation",
-    description:
-      "Transform ideas into stunning AI-powered videos with creative visuals, cinematic scenes and next-generation storytelling.",
-    tags: ["AI Video", "AI Visuals", "Creative Films"],
-  },
-  {
-    number: "02",
-    title: "Promotional Shoot",
-    description:
-      "Create compelling promotional films that showcase your brand, products and services with impact.",
-    tags: ["Brand Films", "Product Videos", "Commercials"],
-  },
-  {
-    number: "03",
-    title: "Social Reels",
-    description:
-      "Engaging short-form videos designed to capture attention and bring your ideas to life on social media.",
-    tags: ["Instagram Reels", "Short Videos", "Social Content"],
-  },
-  {
-    number: "04",
-    title: "Events",
-    description:
-      "Capture the atmosphere, people and memorable moments of your events through cinematic storytelling.",
-    tags: ["Event Coverage", "Highlight Films", "Live Moments"],
-  },
-  {
-    number: "05",
-    title: "Podcasts",
-    description:
-      "Professional podcast production with quality visuals and audio to make every conversation stand out.",
-    tags: ["Podcast Shoots", "Multi-Camera", "Video Podcasts"],
-  },
-  {
-    number: "06",
-    title: "Video Editing",
-    description:
-      "Transform raw footage into polished visual stories with thoughtful editing, pacing and finishing.",
-    tags: ["Post-Production", "Color Grading", "Motion Graphics"],
-  },
-];
-
 const Services = ({ onGenerateQuotation }) => {
+  const content = useSiteContent("services");
+  const services = content.items.filter((service) => service.title);
+
   const handleServiceQuotation = (service) => {
     if (onGenerateQuotation) {
       onGenerateQuotation({
@@ -85,20 +45,20 @@ const Services = ({ onGenerateQuotation }) => {
         <div className="omt-services-heading reveal">
           <div className="omt-services-label">
             <span />
-            WHAT WE DO
+            {content.label}
           </div>
 
           <h2>
-            Creative work.
-            <br />
-            <em>Every frame.</em>
+            <SectionTitle
+              lines={content.titleLines}
+              accent={content.titleAccent}
+              accentNewLine={content.accentNewLine}
+            />
           </h2>
         </div>
 
         <p className="omt-services-intro reveal delay-1">
-          We bring ideas to life through production,
-          editing and visual storytelling. One creative
-          partner, from the first idea to the final frame.
+          {content.intro}
         </p>
       </div>
 
@@ -106,11 +66,11 @@ const Services = ({ onGenerateQuotation }) => {
         {services.map((service, index) => (
           <article
             className="omt-service-card reveal"
-            key={service.number}
+            key={index}
             style={{ "--service-index": index }}
           >
             <span className="omt-service-number">
-              {service.number}
+              {String(index + 1).padStart(2, "0")}
             </span>
 
             <div className="omt-service-main">
@@ -119,8 +79,8 @@ const Services = ({ onGenerateQuotation }) => {
               <p>{service.description}</p>
 
               <div className="omt-service-tags">
-                {service.tags.map((tag) => (
-                  <span key={tag}>{tag}</span>
+                {service.tags.filter(Boolean).map((tag, tagIndex) => (
+                  <span key={tagIndex}>{tag}</span>
                 ))}
               </div>
             </div>
@@ -138,14 +98,14 @@ const Services = ({ onGenerateQuotation }) => {
       </div>
 
       <div className="omt-services-bottom reveal">
-        <span>HAVE A PROJECT IN MIND?</span>
+        <span>{content.bottomText}</span>
 
         <button
           type="button"
           className="omt-services-create-btn"
           onClick={goToContact}
         >
-          LET'S CREATE SOMETHING <b>↗</b>
+          {content.bottomButton} <b>↗</b>
         </button>
       </div>
     </section>

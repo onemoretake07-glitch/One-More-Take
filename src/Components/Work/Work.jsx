@@ -1,42 +1,12 @@
-
 import React from "react";
+import { useSiteContent } from "../../content/useSiteContent";
+import { SectionTitle } from "../../content/ContentText";
 import "./Work.css";
 
-
-const projects = [
-  {
-    title: "Promotional Shoot",
-    category: "PROMOTIONAL FILMS",
-    image:
-      "https://res.cloudinary.com/db4faz2rs/image/upload/v1790834997/One_More_Take__Cinematic_Production_Set_wgexcd.png",
-  },
-  {
-    title: "Social Reels",
-    category: "SHORT-FORM CONTENT",
-    image:
-      "https://res.cloudinary.com/db4faz2rs/image/upload/v1790834834/One_More_Take__Shoot_Cut_Ready_xcpbp9.png",
-  },
-  {
-    title: "Events",
-    category: "EVENT VIDEOGRAPHY",
-    image:
-      "https://res.cloudinary.com/db4faz2rs/image/upload/v1790834832/Event_Videography_in_Action_vg5ttu.png",
-  },
-  {
-    title: "Podcasts",
-    category: "PODCAST PRODUCTION",
-    image:
-      "https://res.cloudinary.com/db4faz2rs/image/upload/v1790834689/One_More_Take_Podcast_Studio_vl8pmk.png",
-  },
-  {
-    title: "Video Editing",
-    category: "POST-PRODUCTION",
-    image:
-      "https://res.cloudinary.com/db4faz2rs/image/upload/v1790835981/One_More_Take_Creative_Studio_nd96gk.png",
-  },
-];
-
 export default function Work() {
+  const content = useSiteContent("work");
+  const projects = content.projects.filter((project) => project.image);
+
   const handleContact = () => {
     const contactSection = document.getElementById("contact");
 
@@ -54,18 +24,18 @@ export default function Work() {
         <div className="work-heading">
           <div className="work-label">
             <span className="work-label-line"></span>
-            FEATURED WORK
+            {content.label}
           </div>
 
           <h2 className="work-title">
-            REAL STORIES.
-            <br />
-            REAL <em>IMPACT.</em>
+            <SectionTitle
+              lines={content.titleLines}
+              accent={content.titleAccent}
+              accentNewLine={content.accentNewLine}
+            />
           </h2>
 
-          <p className="work-description">
-            Five ways we bring ideas to life through the lens.
-          </p>
+          <p className="work-description">{content.description}</p>
         </div>
 
         <button
@@ -73,7 +43,7 @@ export default function Work() {
           className="work-cta"
           onClick={handleContact}
         >
-          Start a Project
+          {content.buttonText}
           <span className="work-cta-arrow">↗</span>
         </button>
       </div>
@@ -81,8 +51,8 @@ export default function Work() {
       <div className="work-grid">
         {projects.map((project, index) => (
           <article
-            className={`work-card work-card-${index + 1}`}
-            key={project.title}
+            className={`work-card work-card-${(index % 5) + 1}`}
+            key={index}
           >
             <img
               className="work-image"
@@ -120,9 +90,9 @@ export default function Work() {
       </div>
 
       <div className="work-bottom">
-        <span>CREATIVE VISION.</span>
-        <span>VISUAL STORYTELLING.</span>
-        <span>ONE MORE TAKE.</span>
+        {content.bottomWords.filter(Boolean).map((word, index) => (
+          <span key={index}>{word}</span>
+        ))}
       </div>
     </section>
   );

@@ -1,15 +1,12 @@
-
 import React from "react";
-import "./Marquee.css"
+import { useSiteContent } from "../../content/useSiteContent";
+import "./Marquee.css";
 
 const Marquee = () => {
-  const items = [
-    "VIDEO PRODUCTION",
-    "CREATIVE STORYTELLING",
-    "SOCIAL REELS",
-    "PODCAST PRODUCTION",
-    "CINEMATIC EDITING",
-  ];
+  const content = useSiteContent("marquee");
+  const items = content.items.filter(Boolean);
+
+  if (items.length === 0) return null;
 
   return (
     <section className="marquee-section">
