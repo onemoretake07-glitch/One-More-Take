@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /quotation
+
+Sitemap: https://www.onemoretake.online/sitemap.xml

@@ -29,6 +29,21 @@ export default function AdminPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
 
+  // Keep the admin page out of Google search results
+  useEffect(() => {
+    const robotsMeta = document.querySelector('meta[name="robots"]');
+    const previousRobots = robotsMeta?.getAttribute("content");
+    const previousTitle = document.title;
+
+    robotsMeta?.setAttribute("content", "noindex, nofollow");
+    document.title = "Admin | One More Take";
+
+    return () => {
+      if (robotsMeta && previousRobots) robotsMeta.setAttribute("content", previousRobots);
+      document.title = previousTitle;
+    };
+  }, []);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser?.uid === ADMIN_UID) {
